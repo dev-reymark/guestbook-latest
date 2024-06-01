@@ -148,20 +148,26 @@ export default function Home({ auth, mediaUrls = [] }) {
                         </Card>
 
                         <div className="grid grid-cols-1 gap-2 items-center">
-                            <Card className="p-2 text-center font-semibold text-gray-200 bg-transparent" style={{ height: "150px" }}>
+                            <Card
+                                className="p-2 text-center font-semibold text-gray-200 bg-transparent"
+                                style={{ height: "150px" }}
+                            >
                                 <p className="text-7xl">{formattedTime}</p>
                                 <p className="text-3xl">{formattedDate}</p>
                             </Card>
 
-                            <div className="grid grid-cols-2 gap-4" style={{ height: "200px" }}>
+                            <div
+                                className="grid grid-cols-2 gap-4"
+                                style={{ height: "200px" }}
+                            >
                                 <Card as={Link} href={route("guestlog.create")}>
                                     <div className="flex items-start gap-4 p-6 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                            <FaSignInAlt />
+                                            <FaSignInAlt className="h-6 w-6" />
                                         </div>
 
                                         <div className="pt-3 sm:pt-5">
-                                            <h2 className="text-xl font-semibold text-black dark:text-white">
+                                            <h2 className="text-3xl font-semibold text-black dark:text-white">
                                                 Check in
                                             </h2>
                                         </div>
@@ -171,10 +177,10 @@ export default function Home({ auth, mediaUrls = [] }) {
                                 <Card as={Link} href={route("guest.log.show")}>
                                     <div className="flex items-start gap-4 p-6 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                            <FaSignOutAlt />
+                                            <FaSignOutAlt className="h-6 w-6" />
                                         </div>
                                         <div className="pt-3 sm:pt-5">
-                                            <h2 className="text-xl font-semibold text-black dark:text-white">
+                                            <h2 className="text-3xl font-semibold text-black dark:text-white">
                                                 Check out
                                             </h2>
                                         </div>
@@ -349,6 +355,9 @@ export default function Home({ auth, mediaUrls = [] }) {
                                 <Divider />
                                 <CardFooter>
                                     <p>
+                                        This kiosk collects personal information
+                                        from visitors and registers them as
+                                        guest. <br />
                                         We are committed to protecting your
                                         personal information and ensuring its
                                         confidentiality. Any data collected
