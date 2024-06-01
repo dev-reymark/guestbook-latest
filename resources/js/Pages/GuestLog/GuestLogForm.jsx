@@ -319,21 +319,7 @@ export default function GuestLogForm({ guests }) {
                                         key={option.value}
                                         value={option.value}
                                     >
-                                        <div className="flex gap-2 items-center">
-                                            <Avatar
-                                                alt={option.label}
-                                                className="flex-shrink-0"
-                                                src={option.avatar}
-                                            />
-                                            <div className="flex flex-col">
-                                                <span className="text-small">
-                                                    {option.label}
-                                                </span>
-                                                <span className="text-tiny text-default-400">
-                                                    {option.position}
-                                                </span>
-                                            </div>
-                                        </div>
+                                        {option.label}
                                     </SelectItem>
                                 ))}
                             </Select>
