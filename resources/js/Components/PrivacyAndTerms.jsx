@@ -13,11 +13,7 @@ import {
 } from "@nextui-org/react";
 import { FaRegUserCircle } from "react-icons/fa";
 import { MdSecurity } from "react-icons/md";
-import {
-    FiLock,
-    FiCheckCircle,
-    FiShield,
-} from "react-icons/fi";
+import { FiLock, FiCheckCircle, FiShield, FiInfo, FiShare } from "react-icons/fi";
 
 export default function PrivacyAndTermsModal() {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -26,7 +22,7 @@ export default function PrivacyAndTermsModal() {
 
     return (
         <>
-            <Link onPress={onOpen}>privacy and terms.</Link>
+            <Link onPress={onOpen}>privacy notice.</Link>
             <Modal
                 isOpen={isOpen}
                 onOpenChange={onOpenChange}
@@ -43,14 +39,13 @@ export default function PrivacyAndTermsModal() {
                                         className="text-success"
                                     />{" "}
                                     <h2 className="uppercase text-md bg-clip-text bg-gradient-to-l from-blue-600 to-violet-500 text-transparent dark:from-blue-400 dark:to-violet-400">
-                                        Guest Logbook Privacy and Terms
+                                        Guestbook Kiosk Privacy Notice
                                     </h2>
                                 </div>
                             </ModalHeader>
                             <ModalBody>
                                 <Listbox
                                     variant="shadow"
-                                    color="primary"
                                     aria-label="Privacy Policy"
                                 >
                                     <ListboxSection title="" showDivider>
@@ -59,16 +54,17 @@ export default function PrivacyAndTermsModal() {
                                             description={
                                                 <>
                                                     <p>
-                                                        This section outlines
-                                                        how we collect, use, and
-                                                        protect your personal
-                                                        and non-personal
-                                                        information. We are
-                                                        committed to
-                                                        safeguarding your
-                                                        privacy and ensuring a
-                                                        secure online experience
-                                                        with our guest logbook.
+                                                        This privacy notice
+                                                        discloses the privacy
+                                                        practices for the
+                                                        Guestbook Kiosk (the
+                                                        "Kiosk"). This Kiosk is
+                                                        provided by Datalogic
+                                                        Systems Corporation
+                                                        ("we," "us," or "our").
+                                                        This notice applies to
+                                                        information collected
+                                                        through the Kiosk.
                                                     </p>
                                                 </>
                                             }
@@ -78,16 +74,17 @@ export default function PrivacyAndTermsModal() {
                                             description={
                                                 <>
                                                     <p>
-                                                        We may collect personal
-                                                        details such as your
-                                                        name, email address, and
-                                                        phone number when you
-                                                        complete the
-                                                        registration form. This
-                                                        information allows us to
-                                                        effectively manage guest
-                                                        entries and ensure a
-                                                        personalized experience.
+                                                        The Kiosk may collect
+                                                        the following
+                                                        information from you:
+                                                        <ol>
+                                                            <li>Name,</li>
+                                                            <li>Company,</li>
+                                                            <li>Email,</li>
+                                                            <li>Phone,</li>
+                                                            <li>ID, and</li>
+                                                            <li>Address.</li>
+                                                        </ol>
                                                     </p>
                                                 </>
                                             }
@@ -97,57 +94,105 @@ export default function PrivacyAndTermsModal() {
                                                 />
                                             }
                                         >
-                                            Information Collection
+                                            Information We Collect
                                         </ListboxItem>
                                         <ListboxItem
                                             key=""
                                             description={
                                                 <>
                                                     <p>
-                                                        Your personal
-                                                        information is utilized
-                                                        for enhancing our guest
-                                                        logbook services,
-                                                        facilitating
-                                                        communication with you,
-                                                        and improving our
-                                                        overall user experience.
-                                                        We do not engage in any
-                                                        form of unauthorized
-                                                        marketing or sharing of
-                                                        your data.
+                                                        We use the information
+                                                        collected through the
+                                                        Kiosk to: <br />
+                                                        {/* Display your message and
+                                                        signature in the
+                                                        Guestbook. <br /> */}
+                                                        Potentially contact you
+                                                        if necessary (e.g., to
+                                                        clarify a message).
                                                     </p>
                                                 </>
                                             }
                                             startContent={
-                                                <FiLock
+                                                <FiInfo
                                                     className={iconClasses}
                                                 />
                                             }
                                         >
-                                            Use of Information
+                                            How We Use Your Information
                                         </ListboxItem>
                                         <ListboxItem
                                             key=""
-                                            description="We take appropriate measures to safeguard your data and maintain its confidentiality. Your information is not sold or shared with third parties unless required by law."
+                                            description={
+                                                <>
+                                                    <p>
+                                                        We will not share your
+                                                        information with any
+                                                        third party without your
+                                                        consent, except: <br />{" "}
+                                                        To comply with legal
+                                                        obligations or law
+                                                        enforcement requests.{" "}
+                                                        <br /> To protect our
+                                                        rights or the safety of
+                                                        others.
+                                                    </p>
+                                                </>
+                                            }
+                                            startContent={
+                                                <FiShare
+                                                    className={iconClasses}
+                                                />
+                                            }
+                                        >
+                                            Information Sharing
+                                        </ListboxItem>
+                                        <ListboxItem
+                                            key=""
+                                            description="We will retain the information collected through the Kiosk for as long as necessary to fulfill the purposes outlined in this privacy notice, unless a longer retention period is required or permitted by law."
                                             startContent={
                                                 <FiShield
                                                     className={iconClasses}
                                                 />
                                             }
                                         >
-                                            Data Protection
+                                            Data Retention
                                         </ListboxItem>
                                         <ListboxItem
                                             key=""
-                                            description="By using our guest logbook and submitting information through the form, you consent to the terms outlined in this privacy policy."
+                                            description={
+                                                <>
+                                                    <p>
+                                                        You have the following
+                                                        choices regarding your
+                                                        information: <br />
+                                                        You can choose not to
+                                                        enter any information
+                                                        into the Kiosk. <br />{" "}
+                                                        You can review and edit
+                                                        your message before
+                                                        submitting it.
+                                                    </p>
+                                                </>
+                                            }
                                             startContent={
                                                 <FiCheckCircle
                                                     className={iconClasses}
                                                 />
                                             }
                                         >
-                                            Consent
+                                            Your Choices
+                                        </ListboxItem>
+                                        <ListboxItem
+                                            key=""
+                                            description="We take reasonable steps to protect the information collected through the Kiosk from unauthorized access, use, disclosure, alteration, or destruction. However, no internet transmission or electronic storage system is completely secure."
+                                            startContent={
+                                                <FiLock
+                                                    className={iconClasses}
+                                                />
+                                            }
+                                        >
+                                            Security
                                         </ListboxItem>
                                     </ListboxSection>
                                     <ListboxSection>
@@ -156,30 +201,37 @@ export default function PrivacyAndTermsModal() {
                                             description={
                                                 <>
                                                     <p>
-                                                        Your privacy is
-                                                        important to us. We are
-                                                        committed to protecting
-                                                        your personal
-                                                        information and ensuring
-                                                        its confidentiality. Any
-                                                        data collected through
-                                                        this form will be used
-                                                        solely for the purpose
-                                                        stated and will not be
-                                                        shared with third
-                                                        parties without your
-                                                        consent, except where
-                                                        required by law.
-                                                    </p>
-                                                    <br />
-                                                    <p>
-                                                        Thank you for entrusting
-                                                        us with your
-                                                        information.
+                                                        We may update this
+                                                        privacy notice from time
+                                                        to time. We will post
+                                                        the updated notice on
+                                                        the Kiosk.
                                                     </p>
                                                 </>
                                             }
-                                        ></ListboxItem>
+                                        >
+                                            Changes to this Privacy Notice
+                                        </ListboxItem>
+                                    </ListboxSection>
+                                    <ListboxSection>
+                                        <ListboxItem
+                                            key=""
+                                            description={
+                                                <>
+                                                    <p>
+                                                        If you have any
+                                                        questions about this
+                                                        privacy notice, please
+                                                        contact us at{" "}
+                                                        <b className="text-blue-500">
+                                                            dpcompliance@datalogicorp.net
+                                                        </b>
+                                                    </p>
+                                                </>
+                                            }
+                                        >
+                                            Contact Us
+                                        </ListboxItem>
                                     </ListboxSection>
                                 </Listbox>
                             </ModalBody>

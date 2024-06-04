@@ -189,7 +189,9 @@ export default function Index({ auth }) {
                         }}
                     >
                         <TableHeader>
-                            <TableColumn>#</TableColumn>
+                            <TableColumn className="text-success">
+                                #
+                            </TableColumn>
                             <TableColumn>NAME</TableColumn>
                             <TableColumn>EMAIL</TableColumn>
                             <TableColumn>PHONE</TableColumn>
@@ -207,7 +209,11 @@ export default function Index({ auth }) {
                                     index /* Change filteredGuests to items */
                                 ) => (
                                     <TableRow key={guest.id}>
-                                        <TableCell>{index + 1}</TableCell>
+                                        <TableCell className="text-success">
+                                            {(page - 1) * rowsPerPage +
+                                                index +
+                                                1}
+                                        </TableCell>
                                         <TableCell>{guest.name}</TableCell>
                                         <TableCell>{guest.email}</TableCell>
                                         <TableCell>{guest.phone}</TableCell>

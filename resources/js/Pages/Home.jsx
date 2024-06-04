@@ -162,8 +162,8 @@ export default function Home({ auth, mediaUrls = [] }) {
                             >
                                 <Card as={Link} href={route("guestlog.create")}>
                                     <div className="flex items-start gap-4 p-6 py-14">
-                                        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                            <FaSignInAlt className="h-6 w-6" />
+                                        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#00C48C]/10 sm:size-16">
+                                            <FaSignInAlt className="h-6 w-6 text-primary" />
                                         </div>
 
                                         <div className="pt-3 sm:pt-5">
@@ -176,8 +176,8 @@ export default function Home({ auth, mediaUrls = [] }) {
 
                                 <Card as={Link} href={route("guest.log.show")}>
                                     <div className="flex items-start gap-4 p-6 py-14">
-                                        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF2D20]/10 sm:size-16">
-                                            <FaSignOutAlt className="h-6 w-6" />
+                                        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF6B6B]/10 sm:size-16">
+                                            <FaSignOutAlt className="h-6 w-6 text-danger" />
                                         </div>
                                         <div className="pt-3 sm:pt-5">
                                             <h2 className="text-3xl font-semibold text-black dark:text-white">
@@ -332,10 +332,9 @@ export default function Home({ auth, mediaUrls = [] }) {
                                     <div className="flex gap-3">
                                         <Image
                                             alt="DSC logo"
-                                            height={40}
                                             radius="sm"
                                             src="/assets/images/logo.png"
-                                            width={40}
+                                            width={50}
                                         />
                                         <div className="flex flex-col">
                                             <p className="text-md">
@@ -349,7 +348,7 @@ export default function Home({ auth, mediaUrls = [] }) {
                                     <Image
                                         alt="Datalogic logo"
                                         src="/assets/images/npc-seal.png"
-                                        className="w-20 h-15"
+                                        width={90}
                                     />
                                 </CardHeader>
                                 <Divider />

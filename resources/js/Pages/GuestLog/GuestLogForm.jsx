@@ -165,6 +165,11 @@ export default function GuestLogForm({ guests }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const checkInTime = new Date(values.check_in_time)
+            .toISOString()
+            .slice(0, 19)
+            .replace("T", " ");
+
         const guestItemsFormData = new FormData();
         guestItemsState.forEach((item, index) => {
             guestItemsFormData.append(
@@ -183,7 +188,7 @@ export default function GuestLogForm({ guests }) {
 
         const formData = {
             ...values,
-            check_in_time: new Date(values.check_in_time).toISOString(),
+            check_in_time: checkInTime.toString(),
             check_out_time: values.check_out_time
                 ? new Date(values.check_out_time).toISOString()
                 : null,
@@ -302,6 +307,7 @@ export default function GuestLogForm({ guests }) {
                         <Spacer y={2} />
                         <div className="mb-4">
                             <Select
+                                selectionMode="multiple"
                                 label="Meeting With"
                                 labelPlacement="outside"
                                 placeholder="Select"
@@ -319,7 +325,7 @@ export default function GuestLogForm({ guests }) {
                                         key={option.value}
                                         value={option.value}
                                     >
-                                        {option.label}
+                                        {`${option.label} - ${option.position}`}
                                     </SelectItem>
                                 ))}
                             </Select>
@@ -327,6 +333,7 @@ export default function GuestLogForm({ guests }) {
                         <Spacer y={2} />
                         <div className="mb-4">
                             <Select
+                            selectionMode="multiple"
                                 label="Purpose of Visit"
                                 labelPlacement="outside"
                                 placeholder="Select Purpose"

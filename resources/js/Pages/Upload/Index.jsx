@@ -58,6 +58,16 @@ export default function Index({ auth }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!data.media_url) {
+            Swal.fire({
+                icon: "warning",
+                title: "Oops...",
+                text: "Please enter a media URL.",
+            });
+            return;
+        }
+
         try {
             await post(route("media.upload"), data);
             Swal.fire({
@@ -142,6 +152,16 @@ export default function Index({ auth }) {
                             <form onSubmit={handleSubmit}>
                                 <ModalHeader className="flex flex-col gap-1">
                                     Upload Media Url
+                                    <p className="text-sm text-gray-500">
+                                        Instructions: Please upload your video
+                                        (mp4) or image (jpg, png, webp) to an
+                                        online storage service like Google Drive
+                                        or Dropbox, then paste the link here.
+                                        The URL should look something like this:
+                                        <br />
+                                        https://domain.com/file.mp4 or
+                                        https://domain.com/file.jpg
+                                    </p>
                                 </ModalHeader>
                                 <ModalBody>
                                     <div className="mb-4">

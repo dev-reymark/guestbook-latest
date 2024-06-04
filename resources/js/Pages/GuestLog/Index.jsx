@@ -1,4 +1,5 @@
 import { useState } from "react";
+import React from "react";
 import { Head } from "@inertiajs/react";
 import {
     Input,
@@ -10,6 +11,8 @@ import {
     TableCell,
     Tooltip,
     DateRangePicker,
+    Pagination,
+    getKeyValue,
 } from "@nextui-org/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { DeleteIcon, SearchIcon } from "@/Components/Icons";
@@ -68,6 +71,18 @@ export default function Index({ auth, guestLogs }) {
 
     const filteredGuestLogs = guestLogs.filter(filterLogs);
 
+    const [page, setPage] = React.useState(1);
+    const rowsPerPage = 15;
+
+    const pages = Math.ceil(filteredGuestLogs.length / rowsPerPage);
+
+    const items = React.useMemo(() => {
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        return filteredGuestLogs.slice(start, end);
+    }, [page, rowsPerPage, filteredGuestLogs]);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
@@ -102,8 +117,28 @@ export default function Index({ auth, guestLogs }) {
                             />
                         </div>
 
-                        <Table selectionMode="single" aria-label="Guests Table">
+                        <Table
+                            selectionMode="single"
+                            aria-label="Guests Table"
+                            bottomContent={
+                                <div className="flex w-full justify-center">
+                                    <Pagination
+                                        isCompact
+                                        showControls
+                                        showShadow
+                                        color="secondary"
+                                        page={page}
+                                        total={pages}
+                                        onChange={(page) => setPage(page)}
+                                    />
+                                </div>
+                            }
+                            classNames={{
+                                wrapper: "min-h-[222px]",
+                            }}
+                        >
                             <TableHeader>
+                                <TableColumn className="text-success">#</TableColumn>
                                 <TableColumn>Guest ID</TableColumn>
                                 <TableColumn>Guest Name</TableColumn>
                                 <TableColumn>Purpose of Visit</TableColumn>
@@ -111,9 +146,13 @@ export default function Index({ auth, guestLogs }) {
                                 <TableColumn>Check Out</TableColumn>
                                 <TableColumn>Actions</TableColumn>
                             </TableHeader>
-                            <TableBody emptyContent={"No guests found."}>
-                                {filteredGuestLogs.map((guestLog) => (
+                            <TableBody
+                                emptyContent={"No guests found."}
+                                items={items}
+                            >
+                                {items.map((guestLog, index) => (
                                     <TableRow key={guestLog.id}>
+                                        <TableCell className="text-success">{(page - 1) * rowsPerPage + index + 1}</TableCell>
                                         <TableCell>
                                             {guestLog.guest_id}
                                         </TableCell>
