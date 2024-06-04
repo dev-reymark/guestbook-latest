@@ -83,12 +83,12 @@ export default function Home({ auth, mediaUrls = [] }) {
                     src="/assets/images/bg.png"
                 />
 
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-10">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     {/* <Header auth={auth} /> */}
 
                     <main
                         className="mt-20 grid gap-4 lg:grid-cols-2"
-                        style={{ height: "650px" }}
+                        style={{ height: "600px" }}
                     >
                         <Card className="w-full">
                             <div className="h-full">
@@ -147,13 +147,15 @@ export default function Home({ auth, mediaUrls = [] }) {
                             </div>
                         </Card>
 
-                        <div className="grid grid-cols-1 gap-2 items-center">
+                        <div className="grid grid-cols-1 gap-4 items-center">
                             <Card
                                 className="p-2 text-center font-semibold text-gray-200 bg-transparent"
                                 style={{ height: "150px" }}
                             >
                                 <p className="text-7xl">{formattedTime}</p>
-                                <p className="text-3xl">{formattedDate}</p>
+                                <p className="text-3xl font-light">
+                                    {formattedDate}
+                                </p>
                             </Card>
 
                             <div
@@ -161,27 +163,27 @@ export default function Home({ auth, mediaUrls = [] }) {
                                 style={{ height: "200px" }}
                             >
                                 <Card as={Link} href={route("guestlog.create")}>
-                                    <div className="flex items-start gap-4 p-6 py-14">
+                                    <div className="flex items-start gap-4 p-5 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#00C48C]/10 sm:size-16">
                                             <FaSignInAlt className="h-6 w-6 text-primary" />
                                         </div>
 
                                         <div className="pt-3 sm:pt-5">
-                                            <h2 className="text-3xl font-semibold text-black dark:text-white">
-                                                Check in
+                                            <h2 className="text-2xl font-semibold text-black dark:text-white">
+                                                Check-in
                                             </h2>
                                         </div>
                                     </div>
                                 </Card>
 
                                 <Card as={Link} href={route("guest.log.show")}>
-                                    <div className="flex items-start gap-4 p-6 py-14">
+                                    <div className="flex items-start gap-4 p-5 py-14">
                                         <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#FF6B6B]/10 sm:size-16">
                                             <FaSignOutAlt className="h-6 w-6 text-danger" />
                                         </div>
                                         <div className="pt-3 sm:pt-5">
-                                            <h2 className="text-3xl font-semibold text-black dark:text-white">
-                                                Check out
+                                            <h2 className="text-2xl font-semibold text-black dark:text-white">
+                                                Check-out
                                             </h2>
                                         </div>
                                     </div>
@@ -328,35 +330,24 @@ export default function Home({ auth, mediaUrls = [] }) {
                             </Card> */}
 
                             <Card className="p-2" style={{ height: "290px" }}>
-                                <CardHeader className="flex gap-3 justify-between">
-                                    <div className="flex gap-3">
-                                        <Image
-                                            alt="DSC logo"
-                                            radius="sm"
-                                            src="/assets/images/logo.png"
-                                            width={50}
-                                        />
-                                        <div className="flex flex-col">
-                                            <p className="text-md">
-                                                Datalogic Systems Corporation
-                                            </p>
-                                            <p className="text-small text-default-500">
-                                                https://www.datalogic.com
-                                            </p>
-                                        </div>
-                                    </div>
+                                <CardHeader className="text-center p-0 mb-3">
                                     <Image
-                                        alt="Datalogic logo"
-                                        src="/assets/images/npc-seal.png"
-                                        width={90}
+                                        src="/assets/images/logo-new.png"
+                                        alt=""
+                                        width="auto"
+                                        height="16"
                                     />
                                 </CardHeader>
                                 <Divider />
                                 <CardFooter>
-                                    <p>
+                                    <p className="text-sm">
+                                        <span className="font-bold text-md">
+                                            Privacy Notice: {"  "}
+                                        </span>
                                         This kiosk collects personal information
                                         from visitors and registers them as
                                         guest. <br />
+                                        <br />
                                         We are committed to protecting your
                                         personal information and ensuring its
                                         confidentiality. Any data collected
