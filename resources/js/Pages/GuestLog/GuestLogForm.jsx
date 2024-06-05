@@ -267,10 +267,14 @@ export default function GuestLogForm({ guests }) {
                     <form onSubmit={handleSubmit}>
                         <div className="flex gap-3 mb-4">
                             <Select
-                                label="Guest Name"
+                                label={
+                                    <>
+                                        <b>Guest Name</b>
+                                    </>
+                                }
                                 labelPlacement="outside"
                                 placeholder="Select Guest Name"
-                                description="If you don't see your name here, please register."
+                                description="If you don't see your name here, please register first."
                                 value={selectedGuestId}
                                 onChange={handleGuestChange}
                                 isRequired
@@ -292,7 +296,7 @@ export default function GuestLogForm({ guests }) {
                             </Select>
                             <Input
                                 variant="bordered"
-                                placeholder="Search by name"
+                                placeholder="Search your name here"
                                 className="w-full sm:max-w-[35%] mt-6"
                                 startContent={
                                     <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
@@ -308,7 +312,11 @@ export default function GuestLogForm({ guests }) {
                         <div className="mb-4">
                             <Select
                                 selectionMode="multiple"
-                                label="Meeting With"
+                                label={
+                                    <>
+                                        <b>Meeting With</b>
+                                    </>
+                                }
                                 labelPlacement="outside"
                                 placeholder="Select"
                                 value={values.meeting_with}
@@ -333,8 +341,12 @@ export default function GuestLogForm({ guests }) {
                         <Spacer y={2} />
                         <div className="mb-4">
                             <Select
-                            selectionMode="multiple"
-                                label="Purpose of Visit"
+                                selectionMode="multiple"
+                                label={
+                                    <>
+                                        <b>Purpose of Visit</b>
+                                    </>
+                                }
                                 labelPlacement="outside"
                                 placeholder="Select Purpose"
                                 value={values.purpose_of_visit}
@@ -359,7 +371,11 @@ export default function GuestLogForm({ guests }) {
                         <Spacer y={2} />
                         <div className="flex gap-4 mb-4">
                             <Input
-                                label="Check In"
+                                label={
+                                    <>
+                                        <b>Check In Time</b>
+                                    </>
+                                }
                                 placeholder="Check In"
                                 description="Please enter your check in time or click the button to check in."
                                 labelPlacement="outside"
@@ -385,7 +401,7 @@ export default function GuestLogForm({ guests }) {
                             </Button>
                         </div>
                         <Spacer y={7} />
-                        <p className="mb-4">Guest Belongings</p>
+                        <p className="mb-4 font-bold">Guest Belongings</p>
                         <Table className="mb-4">
                             <TableHeader>
                                 <TableColumn>No.</TableColumn>

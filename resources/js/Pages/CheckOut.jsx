@@ -14,7 +14,7 @@ import {
     SelectItem,
     Card,
 } from "@nextui-org/react";
-import { FaHome, FaPlus } from "react-icons/fa";
+import { FaHome, FaSignInAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
 import { useEffect, useState } from "react";
@@ -128,7 +128,8 @@ export default function CheckOut({ guestLogs }) {
                                 </span>
                             </h2>
                             <p className="text-sm font-light">
-                                To check out a guest, click on the "Check Out" button.
+                                To check out a guest, click on the "Check Out"
+                                button.
                             </p>
                         </div>
                         <div className="flex flex-col gap-4">
@@ -139,9 +140,9 @@ export default function CheckOut({ guestLogs }) {
                                         href={route("guestlog.create")}
                                         color="primary"
                                         variant="shadow"
-                                        endContent={<FaPlus />}
+                                        endContent={<FaSignInAlt />}
                                     >
-                                        Create
+                                        Check-In
                                     </Button>
                                     <Button
                                         isIconOnly
@@ -272,13 +273,33 @@ export default function CheckOut({ guestLogs }) {
                                                                 guestLog.check_in_time
                                                             ).getTimezoneOffset() *
                                                                 60000
-                                                    ).toLocaleString()}
+                                                    ).toLocaleString([], {
+                                                        year: "numeric",
+                                                        month: "numeric",
+                                                        day: "numeric",
+                                                        hour: "numeric",
+                                                        minute: "numeric",
+                                                        hour12: true,
+                                                    })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {guestLog.check_out_time ? (
                                                         new Date(
-                                                            guestLog.check_out_time
-                                                        ).toLocaleString()
+                                                            new Date(
+                                                                guestLog.check_out_time
+                                                            ).getTime() -
+                                                                new Date(
+                                                                    guestLog.check_out_time
+                                                                ).getTimezoneOffset() *
+                                                                    60000
+                                                        ).toLocaleString([], {
+                                                            year: "numeric",
+                                                            month: "numeric",
+                                                            day: "numeric",
+                                                            hour: "numeric",
+                                                            minute: "numeric",
+                                                            hour12: true,
+                                                        })
                                                     ) : (
                                                         <Button
                                                             onClick={() =>

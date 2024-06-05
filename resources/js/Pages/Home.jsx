@@ -18,7 +18,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { HiArrowTrendingDown, HiArrowTrendingUp } from "react-icons/hi2";
 
@@ -26,7 +26,15 @@ export default function Home({ auth, mediaUrls = [] }) {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [totalRegisteredGuest, setTotalRegisteredGuest] = useState(null);
     const [avgLogsInPast7Days, setAvgLogsInPast7Days] = useState(null);
+    const audioRef = useRef(null);
 
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.play().catch((error) => {
+                console.error("Error playing audio:", error);
+            });
+        }
+    }, []);
     useEffect(() => {
         fetchGuestData();
     }, []);
@@ -77,6 +85,7 @@ export default function Home({ auth, mediaUrls = [] }) {
     return (
         <>
             <Head title="Home" />
+            <audio ref={audioRef} src="/assets/audio/datalogic.mp3" autoPlay></audio>
             <div className="relative min-h-screen p-5">
                 <img
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
