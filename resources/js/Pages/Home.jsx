@@ -85,7 +85,7 @@ export default function Home({ auth, mediaUrls = [] }) {
     return (
         <>
             <Head title="Home" />
-            <audio ref={audioRef} src="/assets/audio/datalogic.mp3" autoPlay></audio>
+            <audio ref={audioRef} src="/assets/audio/datalogic.mp3" autoPlay loop></audio>
             <div className="relative min-h-screen p-5">
                 <img
                     className="absolute inset-0 w-full h-full object-cover pointer-events-none"
