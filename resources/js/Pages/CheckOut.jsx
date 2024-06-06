@@ -167,7 +167,7 @@ export default function CheckOut({ guestLogs }) {
                                 />
                             </div>
                             <div className="flex justify-between items-center mt-4">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 w-[25%]">
                                     <Select
                                         size="sm"
                                         placeholder="Items Per Page"
@@ -177,7 +177,6 @@ export default function CheckOut({ guestLogs }) {
                                                 Number(e.target.value)
                                             )
                                         }
-                                        className="w-24"
                                     >
                                         <SelectItem value="5" key="5">
                                             5

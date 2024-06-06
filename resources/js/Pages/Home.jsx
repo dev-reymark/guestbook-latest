@@ -13,6 +13,21 @@ import { FaRegUser, FaSignInAlt, FaSignOutAlt } from "react-icons/fa";
 import { Navigation, Autoplay } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
+<style jsx>{`
+    .swiper-container {
+        width: 100%;
+        height: 100%;
+    }
+
+    .swiper-slide {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+`}</style>
+
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
