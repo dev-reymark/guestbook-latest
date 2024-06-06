@@ -288,16 +288,20 @@ export default function GuestRegisterForm() {
                                 </ListboxItem>
                             </ListboxSection>
                         </Listbox>
-                        <div>
-                            <Checkbox
-                                name="is_agreed"
-                                checked={isChecked}
-                                onChange={handleCheckboxChange}
-                            >
-                                Yes, I agree to the terms of this privacy notice
-                            </Checkbox>
-                        </div>
                     </ModalBody>
+                    <div className="px-4 py-3 sm:px-6">
+                        <Checkbox
+                            name="is_agreed"
+                            checked={isChecked}
+                            onChange={handleCheckboxChange}
+                        >
+                            <span className="text-sm">
+                                I have read and agreed to the privacy notice
+                                stated above and I understand that I can revoke
+                                my consent at any time.
+                            </span>
+                        </Checkbox>
+                    </div>
                     <ModalFooter>
                         <Button
                             color="primary"

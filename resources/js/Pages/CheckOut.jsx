@@ -167,7 +167,7 @@ export default function CheckOut({ guestLogs }) {
                                 />
                             </div>
                             <div className="flex justify-between items-center mt-4">
-                                <div className="flex gap-2 w-[25%]">
+                                <div className="flex gap-2 w-[35%]">
                                     <Select
                                         size="sm"
                                         placeholder="Items Per Page"
