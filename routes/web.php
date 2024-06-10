@@ -59,5 +59,4 @@ Route::get('/', [UploadController::class, 'index'])->name('media.index');
 Route::get('/upload/all', [UploadController::class, 'show']);
 Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
 
-
 require __DIR__ . '/auth.php';

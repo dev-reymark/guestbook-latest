@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Head } from "@inertiajs/react";
 import {
+    Autocomplete,
+    AutocompleteItem,
     Avatar,
     Button,
     Input,
@@ -266,35 +268,29 @@ export default function GuestLogForm({ guests }) {
 
                     <form onSubmit={handleSubmit}>
                         <div className="flex gap-3 mb-4">
-                            <Select
+                            <Autocomplete
                                 label={
                                     <>
                                         <b>Guest Name</b>
                                     </>
                                 }
                                 labelPlacement="outside"
-                                placeholder="Select Guest Name"
+                                placeholder="Search your name here"
                                 description="If you don't see your name here, please register first."
-                                value={selectedGuestId}
-                                onChange={handleGuestChange}
+                                selectedKey={selectedGuestId}
+                                onSelectionChange={setSelectedGuestId}
                                 isRequired
                             >
-                                {filteredGuests.length > 0 ? (
-                                    filteredGuests.map((guest) => (
-                                        <SelectItem
-                                            key={guest.id}
-                                            value={guest.id}
-                                        >
-                                            {guest.name}
-                                        </SelectItem>
-                                    ))
-                                ) : (
-                                    <SelectItem value="" key={""}>
-                                        No matching name available
-                                    </SelectItem>
-                                )}
-                            </Select>
-                            <Input
+                                {filteredGuests.map((guest) => (
+                                    <AutocompleteItem
+                                        key={guest.id}
+                                        value={guest.id}
+                                    >
+                                        {guest.name}
+                                    </AutocompleteItem>
+                                ))}
+                            </Autocomplete>
+                            {/* <Input
                                 variant="bordered"
                                 placeholder="Search your name here"
                                 className="w-full sm:max-w-[35%] mt-6"
@@ -304,14 +300,14 @@ export default function GuestLogForm({ guests }) {
                                 value={searchValue}
                                 onChange={handleSearchChange}
                                 onClear={() => setSearchValue("")}
-                            />
+                            /> */}
 
                             <GuestRegisterForm />
                         </div>
                         <Spacer y={2} />
                         <div className="mb-4">
                             <Select
-                                selectionMode="multiple"
+                                // selectionMode="multiple"
                                 label={
                                     <>
                                         <b>Meeting With</b>
@@ -326,7 +322,6 @@ export default function GuestLogForm({ guests }) {
                                         meeting_with: e.target.value,
                                     })
                                 }
-                                isRequired
                             >
                                 {meetingWithOptions.map((option) => (
                                     <SelectItem
@@ -341,7 +336,7 @@ export default function GuestLogForm({ guests }) {
                         <Spacer y={2} />
                         <div className="mb-4">
                             <Select
-                                selectionMode="multiple"
+                                // selectionMode="multiple"
                                 label={
                                     <>
                                         <b>Purpose of Visit</b>

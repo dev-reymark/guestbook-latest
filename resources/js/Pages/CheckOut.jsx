@@ -14,7 +14,7 @@ import {
     SelectItem,
     Card,
 } from "@nextui-org/react";
-import { FaHome, FaSignInAlt } from "react-icons/fa";
+import { FaHome, FaPlus, FaSignInAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
 import { useEffect, useState } from "react";
@@ -140,9 +140,9 @@ export default function CheckOut({ guestLogs }) {
                                         href={route("guestlog.create")}
                                         color="primary"
                                         variant="shadow"
-                                        endContent={<FaSignInAlt />}
+                                        endContent={<FaPlus />}
                                     >
-                                        Check-In
+                                        Check-in
                                     </Button>
                                     <Button
                                         isIconOnly
