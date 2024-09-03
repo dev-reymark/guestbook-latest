@@ -17,7 +17,7 @@ import {
 import { FaHome, FaPlus, FaSignInAlt } from "react-icons/fa";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { SearchIcon } from "@/Components/Icons";
 
 export default function CheckOut({ guestLogs }) {
@@ -26,6 +26,7 @@ export default function CheckOut({ guestLogs }) {
     const [itemsPerPage, setItemsPerPage] = useState(13);
     const [selectedInterval, setSelectedInterval] = useState("past24Hours");
     const [filteredLogs, setFilteredLogs] = useState([]);
+    const timeoutRef = useRef(null);
 
     useEffect(() => {
         const filterLogsByInterval = () => {
@@ -96,19 +97,29 @@ export default function CheckOut({ guestLogs }) {
     };
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            Inertia.visit("/", { replace: true });
-        }, 30000);
+        const startTimeout = () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+
+            timeoutRef.current = setTimeout(() => {
+                Inertia.visit("/", { replace: true });
+            }, 15000);
+        };
+
+        startTimeout();
 
         const resetTimeout = () => {
-            clearTimeout(timeout);
+            startTimeout();
         };
 
         window.addEventListener("mousemove", resetTimeout);
         window.addEventListener("keydown", resetTimeout);
 
         return () => {
-            clearTimeout(timeout);
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
             window.removeEventListener("mousemove", resetTimeout);
             window.removeEventListener("keydown", resetTimeout);
         };

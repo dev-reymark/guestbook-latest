@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Head } from "@inertiajs/react";
 import {
     Autocomplete,
@@ -132,6 +132,7 @@ export default function GuestLogForm({ guests }) {
         check_in_time: "",
         check_out_time: "",
     });
+    const timeoutRef = useRef(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -229,24 +230,34 @@ export default function GuestLogForm({ guests }) {
         )
         .sort((a, b) => a.name.localeCompare(b.name));
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            Inertia.visit("/", { replace: true });
-        }, 30000);
-
-        const resetTimeout = () => {
-            clearTimeout(timeout);
-        };
-
-        window.addEventListener("mousemove", resetTimeout);
-        window.addEventListener("keydown", resetTimeout);
-
-        return () => {
-            clearTimeout(timeout);
-            window.removeEventListener("mousemove", resetTimeout);
-            window.removeEventListener("keydown", resetTimeout);
-        };
-    }, []);
+        useEffect(() => {
+            const startTimeout = () => {
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
+    
+                timeoutRef.current = setTimeout(() => {
+                    Inertia.visit("/", { replace: true });
+                }, 10000);
+            };
+    
+            startTimeout();
+    
+            const resetTimeout = () => {
+                startTimeout();
+            };
+    
+            window.addEventListener("mousemove", resetTimeout);
+            window.addEventListener("keydown", resetTimeout);
+    
+            return () => {
+                if (timeoutRef.current) {
+                    clearTimeout(timeoutRef.current);
+                }
+                window.removeEventListener("mousemove", resetTimeout);
+                window.removeEventListener("keydown", resetTimeout);
+            };
+        }, []);
 
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
