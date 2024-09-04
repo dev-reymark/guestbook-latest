@@ -104,7 +104,7 @@ export default function CheckOut({ guestLogs }) {
 
             timeoutRef.current = setTimeout(() => {
                 Inertia.visit("/", { replace: true });
-            }, 15000);
+            }, 60000);
         };
 
         startTimeout();
