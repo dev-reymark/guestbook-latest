@@ -238,7 +238,7 @@ export default function GuestLogForm({ guests }) {
     
                 timeoutRef.current = setTimeout(() => {
                     Inertia.visit("/", { replace: true });
-                }, 10000);
+                }, 50000);
             };
     
             startTimeout();
