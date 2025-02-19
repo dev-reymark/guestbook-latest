@@ -109,6 +109,7 @@ const meetingWithOptions = [
 ];
 
 const purposeOfVisitOptions = [
+    { value: "OJT/Interns", label: "OJT/Interns" },
     { value: "Business Meeting", label: "Business Meeting" },
     { value: "Job Interview", label: "Job Interview" },
     { value: "Delivery", label: "Delivery" },
@@ -116,7 +117,7 @@ const purposeOfVisitOptions = [
     { value: "Conference", label: "Conference" },
     { value: "Training", label: "Training" },
     { value: "Seminar", label: "Seminar" },
-    { value: "Meeting", label: "Meeting" },
+    { value: "Client Meeting", label: "Client Meeting" },
     { value: "Company Event", label: "Company Event" },
 ];
 

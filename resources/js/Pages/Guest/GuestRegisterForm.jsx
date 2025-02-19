@@ -363,7 +363,6 @@ export default function GuestRegisterForm() {
                                     onClear={() =>
                                         setValues({ ...values, phone: "" })
                                     }
-                                    isRequired
                                 />
                             </div>
                             <div className="mb-4">
