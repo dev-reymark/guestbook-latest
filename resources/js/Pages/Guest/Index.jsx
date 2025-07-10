@@ -18,11 +18,11 @@ import {
     ModalFooter,
     ModalHeader,
     Pagination,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import React from "react";
 import { FaFilePdf } from "react-icons/fa";
 import Swal from "sweetalert2";
-import GuestRegisterForm from "./GuestRegisterForm";
+import GuestRegisterForm from "./RegisterForm";
 import axios from "axios";
 
 export default function Index({ auth }) {
@@ -149,7 +149,7 @@ export default function Index({ auth }) {
                                 <Button
                                     color="secondary"
                                     variant="flat"
-                                    onClick={handleExport}
+                                    onPress={handleExport}
                                     className="mt-6"
                                     startContent={<FaFilePdf />}
                                 >
@@ -197,7 +197,6 @@ export default function Index({ auth }) {
                             <TableColumn>PHONE</TableColumn>
                             <TableColumn>COMPANY</TableColumn>
                             <TableColumn>ADDRESS</TableColumn>
-                            <TableColumn>ACTION</TableColumn>
                         </TableHeader>
                         <TableBody
                             emptyContent={"No guests found"}
@@ -219,40 +218,6 @@ export default function Index({ auth }) {
                                         <TableCell>{guest.phone}</TableCell>
                                         <TableCell>{guest.company}</TableCell>
                                         <TableCell>{guest.address}</TableCell>
-                                        <TableCell>
-                                            <div className="relative flex items-center gap-2 text-lg cursor-pointer active:opacity-50">
-                                                <Tooltip
-                                                    showArrow={true}
-                                                    color="primary"
-                                                    content="View"
-                                                >
-                                                    <span
-                                                        className="text-primary cursor-pointer active:opacity-50"
-                                                        onClick={() =>
-                                                            openModal(guest)
-                                                        }
-                                                    >
-                                                        <EyeIcon className="text-primary" />
-                                                    </span>
-                                                </Tooltip>
-                                                <Tooltip
-                                                    showArrow={true}
-                                                    color="danger"
-                                                    content="Delete"
-                                                >
-                                                    <span className="text-primary cursor-pointer active:opacity-50">
-                                                        <DeleteIcon
-                                                            className="text-danger"
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    guest.id
-                                                                )
-                                                            }
-                                                        />
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
-                                        </TableCell>
                                     </TableRow>
                                 )
                             )}

@@ -15,7 +15,7 @@ import {
     TableHeader,
     TableRow,
     Spacer,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { FaPlus } from "react-icons/fa";
 import { Head, useForm } from "@inertiajs/react";
 import Swal from "sweetalert2";
@@ -106,7 +106,7 @@ export default function Index({ auth }) {
                         as={Link}
                         onPress={onOpen}
                         color="primary"
-                        endContent={<FaPlus />}
+                        startContent={<FaPlus />}
                     >
                         Add Media
                     </Button>
@@ -179,12 +179,7 @@ export default function Index({ auth }) {
                                     <Button color="primary" type="submit">
                                         Upload
                                     </Button>
-                                    <Button
-                                        color="danger"
-                                        onClick={() =>
-                                            Inertia.visit(route("media.create"))
-                                        }
-                                    >
+                                    <Button color="danger" onPress={onClose}>
                                         Cancel
                                     </Button>
                                 </ModalFooter>

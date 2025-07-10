@@ -33,7 +33,7 @@ class DashboardController extends Controller
         // Calculate the percentage change for guest logs
         $guestLogsPercentChange = $totalGuestLogs != 0 ? (($totalGuestLogs - $guestLogsLastWeek) / $totalGuestLogs) * 100 : 0;
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Admin/Dashboard', [
             // Guest
             'totalRegisteredGuest' => $totalRegisteredGuest,
             'guestsRegisteredLastWeek' => $guestsRegisteredLastWeek,

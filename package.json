@@ -21,7 +21,7 @@
     },
     "dependencies": {
         "@inertiajs/inertia": "^0.11.1",
-        "@nextui-org/react": "^2.3.6",
+        "@heroui/react": "2.7.11",
         "chart.js": "^4.4.2",
         "filepond": "^4.31.1",
         "filepond-plugin-file-validate-type": "^1.2.9",

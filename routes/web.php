@@ -21,7 +21,7 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Admin/Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -46,6 +46,7 @@ Route::post('/guest/log/check-out/{guestLog}', [GuestLogController::class, 'chec
 Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
 Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
 Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
+Route::get('/overdue-guests', [GuestLogController::class, 'getOverdueGuests']);
 
 Route::get('/reports', [ReportController::class, 'create'])->name('report.create');
 

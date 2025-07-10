@@ -13,11 +13,12 @@ import {
     DateRangePicker,
     Pagination,
     getKeyValue,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { DeleteIcon, SearchIcon } from "@/Components/Icons";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
+import { formatLocalDateTime } from "@/utils/date";
 
 export default function Index({ auth, guestLogs }) {
     const [searchTerm, setSearchTerm] = useState("");
@@ -138,13 +139,14 @@ export default function Index({ auth, guestLogs }) {
                             }}
                         >
                             <TableHeader>
-                                <TableColumn className="text-success">#</TableColumn>
+                                <TableColumn className="text-success">
+                                    #
+                                </TableColumn>
                                 <TableColumn>Guest ID</TableColumn>
                                 <TableColumn>Guest Name</TableColumn>
                                 <TableColumn>Purpose of Visit</TableColumn>
                                 <TableColumn>Check In</TableColumn>
                                 <TableColumn>Check Out</TableColumn>
-                                <TableColumn>Actions</TableColumn>
                             </TableHeader>
                             <TableBody
                                 emptyContent={"No guests found."}
@@ -152,7 +154,11 @@ export default function Index({ auth, guestLogs }) {
                             >
                                 {items.map((guestLog, index) => (
                                     <TableRow key={guestLog.id}>
-                                        <TableCell className="text-success">{(page - 1) * rowsPerPage + index + 1}</TableCell>
+                                        <TableCell className="text-success">
+                                            {(page - 1) * rowsPerPage +
+                                                index +
+                                                1}
+                                        </TableCell>
                                         <TableCell>
                                             {guestLog.guest_id}
                                         </TableCell>
@@ -163,30 +169,14 @@ export default function Index({ auth, guestLogs }) {
                                             {guestLog.purpose_of_visit}
                                         </TableCell>
                                         <TableCell>
-                                            {guestLog.check_in_time}
+                                            {formatLocalDateTime(
+                                                guestLog.check_in_time
+                                            )}
                                         </TableCell>
                                         <TableCell>
-                                            {guestLog.check_out_time}
-                                        </TableCell>
-                                        <TableCell>
-                                            <div className="relative flex items-center justify-center gap-2 text-lg cursor-pointer active:opacity-50">
-                                                <Tooltip
-                                                    showArrow={true}
-                                                    color="danger"
-                                                    content="Delete"
-                                                >
-                                                    <span className="text-primary cursor-pointer active:opacity-50">
-                                                        <DeleteIcon
-                                                            className="text-danger"
-                                                            onClick={() =>
-                                                                handleDelete(
-                                                                    guestLog.id
-                                                                )
-                                                            }
-                                                        />
-                                                    </span>
-                                                </Tooltip>
-                                            </div>
+                                            {formatLocalDateTime(
+                                                guestLog.check_out_time
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))}

@@ -4,34 +4,60 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Guest;
+use Illuminate\Support\Facades\Log;
 
 class GuestController extends Controller
 {
     public function create()
     {
-        return inertia('Guest/GuestRegisterForm');
+        return inertia('Guest/RegisterForm');
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'id_type' => 'nullable|string|max:255',
-            'id_number' => 'nullable|string|max:255',
-            'email' => 'nullable|email',
-            'phone' => 'nullable|string|max:20',
-            'company' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'is_agreed' => 'required|boolean',
-        ]);
+        Log::info('Guest registration request received', ['request' => $request->all()]);
 
-        $data = $request->only(['name', 'id_type', 'id_number', 'email', 'phone', 'company', 'address', 'is_agreed']);
+        try {
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'id_type' => 'nullable|string|max:255',
+                'id_number' => 'nullable|string|max:255',
+                'email' => 'nullable|email|unique:guests,email',
+                'phone' => 'nullable|string|max:20',
+                'company' => 'required|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'is_agreed' => 'required|boolean|accepted',
+            ]);
 
-        Guest::create($data);
+            $guest = Guest::create($validated);
 
-        return redirect()->route('guest.register')->with('success', 'Guest registered successfully!');
+            Log::info('Guest registered successfully', [
+                'guest_id' => $guest->id,
+                'name' => $guest->name,
+                'email' => $guest->email,
+            ]);
+
+            return redirect()->route('guestlog.create')
+                ->with('success', 'Registration successful! You can now proceed to check-in.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('Guest registration validation failed', [
+                'errors' => $e->errors(),
+                'input' => $request->except(['_token']),
+                'ip' => $request->ip(),
+            ]);
+
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Guest registration failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->except(['_token']),
+                'ip' => $request->ip(),
+            ]);
+
+            return back()->with('error', 'Registration failed. Please try again or contact support if the problem persists.');
+        }
     }
-
 
     public function index()
     {
@@ -57,15 +83,4 @@ class GuestController extends Controller
 
         return $pdf->download('guests_report.pdf');
     }
-
-    // public function generateReport(Request $request)
-    // {
-
-    //     $guestIds = $request->input('guestIds', []);
-    //     $guests = Guest::whereIn('id', $guestIds)->get() ?? [];
-
-    //     $pdf = app('dompdf.wrapper')->loadView('guests', ['guests' => $guests]);
-
-    //     return $pdf->download('guests_report.pdf');
-    // }
 }

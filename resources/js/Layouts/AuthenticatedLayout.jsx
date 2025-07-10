@@ -9,7 +9,7 @@ import {
     Avatar,
     DropdownMenu,
     DropdownItem,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { Inertia } from "@inertiajs/inertia";
 
 export default function Authenticated({ user, header, children }) {

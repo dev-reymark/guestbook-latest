@@ -3,7 +3,7 @@ import InputError from '@/Components/InputError';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import { Head, useForm } from '@inertiajs/react';
-import { Input } from '@nextui-org/react';
+import { Input } from "@heroui/react";
 
 export default function ForgotPassword({ status }) {
     const { data, setData, post, processing, errors } = useForm({

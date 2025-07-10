@@ -9,7 +9,7 @@ import {
     CardHeader,
     DateRangePicker,
     Divider,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
 import {

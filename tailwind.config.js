@@ -1,6 +1,6 @@
 import defaultTheme from "tailwindcss/defaultTheme";
 import forms from "@tailwindcss/forms";
-import { nextui } from "@nextui-org/react";
+import { heroui } from "@heroui/react";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -9,7 +9,7 @@ export default {
         "./storage/framework/views/*.php",
         "./resources/views/**/*.blade.php",
         "./resources/js/**/*.jsx",
-        "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
+        "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
     ],
 
     theme: {
@@ -20,5 +20,5 @@ export default {
         },
     },
     darkMode: "class",
-    plugins: [nextui()],
+    plugins: [heroui()],
 };

@@ -1,0 +1,1 @@
+function t(e){if(!e)return"";const n=new Date(e),r={year:"numeric",month:"numeric",day:"numeric",hour:"numeric",minute:"numeric",hour12:!0,timeZone:"Asia/Manila"};return n.toLocaleString("en-US",r)}export{t as f};
