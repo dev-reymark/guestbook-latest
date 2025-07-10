@@ -176,10 +176,10 @@ export default function CheckOut({ guestLogs }) {
                                 />
                             </div>
 
-                            <div className="h-[calc(100vh-500px)] overflow-auto">
+                            {/* <div className="h-[calc(100vh-500px)] overflow-auto"> */}
                                 <Table
                                     aria-label="Guests Table"
-                                    isCompact
+                                    // isCompact
                                     topContent={
                                         <div className="flex justify-between items-center mt-4">
                                             <div className="flex gap-2 w-[35%]">
@@ -328,7 +328,7 @@ export default function CheckOut({ guestLogs }) {
                                             ))}
                                     </TableBody>
                                 </Table>
-                            </div>
+                            {/* </div> */}
                             <div className="flex w-full justify-center">
                                 <Pagination
                                     color="primary"
