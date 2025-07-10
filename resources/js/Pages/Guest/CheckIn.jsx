@@ -31,14 +31,13 @@ export default function CheckIn({ guests }) {
         meeting_with: "",
         purpose_of_visit: "",
         check_in_time: "",
-        check_out_time: "",
     });
     const [errors, setErrors] = useState({});
     const [isProcessing, setIsProcessing] = useState(false);
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(true);
     const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
 
-    // useAutoRedirect();
+    useAutoRedirect();
     useFlashMessages();
 
     const handleChange = (e) => {
@@ -98,15 +97,17 @@ export default function CheckIn({ guests }) {
     const handleCheckIn = () => {
         const now = new Date();
         // Format as YYYY-MM-DDTHH:MM in local timezone
-        const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+        const localDateTime = new Date(
+            now.getTime() - now.getTimezoneOffset() * 60000
+        )
             .toISOString()
             .slice(0, 16);
-        
+
         setValues((prev) => ({
             ...prev,
             check_in_time: localDateTime,
         }));
-    
+
         setErrors((prev) => {
             const newErrors = { ...prev };
             delete newErrors.check_in_time;

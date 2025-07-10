@@ -1,17 +1,14 @@
-export function formatLocalDateTime(dateString) {
-    if (!dateString) return "";
+export function formatLocalDateTime(utcDateString) {
+    if (!utcDateString) return "";
 
-    const date = new Date(dateString);
+    const date = new Date(utcDateString);
 
-    const options = {
+    return date.toLocaleString("en-US", {
         year: "numeric",
-        month: "numeric",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
         hour12: true,
-        timeZone: "Asia/Manila",
-    };
-
-    return date.toLocaleString("en-US", options);
+    });
 }

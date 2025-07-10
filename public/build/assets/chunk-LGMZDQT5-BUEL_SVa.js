@@ -1,1 +1,0 @@
-import{aD as o}from"./app-B8Ail98r.js";function i(n,r){if(n!=null){if(o(n)){n(r);return}try{n.current=r}catch{throw new Error(`Cannot assign value '${r}' to ref '${n}'`)}}}function a(...n){return r=>{n.forEach(t=>i(t,r))}}export{a as m};

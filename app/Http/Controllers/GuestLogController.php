@@ -26,7 +26,7 @@ class GuestLogController extends Controller
             $validated = $request->validate([
                 'meeting_with' => 'nullable|string|max:255',
                 'purpose_of_visit' => 'required|string|max:255',
-                'check_in_time' => 'required|date_format:Y-m-d\TH:i',
+                'check_in_time' => 'required|date',
             ]);
 
             $guest = Guest::findOrFail($guestId);
