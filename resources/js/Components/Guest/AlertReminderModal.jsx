@@ -8,9 +8,10 @@ import {
 } from "@heroui/react";
 import { router } from "@inertiajs/react";
 import { useCallback, useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 const REMINDER_DELAY_MINUTES = 30; // snooze length
-const POLL_INTERVAL_MINUTES = 5; // how often we poll the server
+const POLL_INTERVAL_MINUTES = 1; // how often we poll the server
 const REMINDER_KEY = "lastDismissedReminderAt";
 
 export default function AlertReminderModal() {
@@ -20,23 +21,27 @@ export default function AlertReminderModal() {
 
     const delayExpired = () => {
         const last = localStorage.getItem(REMINDER_KEY);
-        if (!last) return true;
-        return Date.now() - Number(last) >= REMINDER_DELAY_MINUTES * 60_000;
+        return (
+            !last ||
+            Date.now() - Number(last) >= REMINDER_DELAY_MINUTES * 60_000
+        );
     };
 
     const fetchOverdueGuests = useCallback(async () => {
-        if (!delayExpired()) return;
+        if (!delayExpired()) return; // still snoozing
 
         try {
             const { data } = await axios.get("/overdue-guests", {
-                params: { threshold: 60 },
+                params: { threshold: 1 },
             });
 
-            if (data.length === 0) {
+            if (!data.length) {
+                // nothing overdue
                 setIsOpen(false);
                 return;
             }
 
+            // pick the guest who has waited the longest
             const mostOverdue = data.reduce((p, c) =>
                 new Date(p.check_in_time) < new Date(c.check_in_time) ? p : c
             );
@@ -57,20 +62,22 @@ export default function AlertReminderModal() {
         }
     }, []);
 
+    /* ---------- poll the server every minute ---------- */
     useEffect(() => {
-        fetchOverdueGuests(); // initial run
-        const poll = setInterval(
+        fetchOverdueGuests(); // initial check
+        const pollId = setInterval(
             fetchOverdueGuests,
             POLL_INTERVAL_MINUTES * 60_000
         );
-        return () => clearInterval(poll);
+        return () => clearInterval(pollId);
     }, [fetchOverdueGuests]);
 
+    /* ---------- snooze / close ---------- */
     const handleClose = () => {
         setIsOpen(false);
         localStorage.setItem(REMINDER_KEY, Date.now().toString());
 
-        // Fire ONE fetch when the snooze expires so the user doesn't rely on polling
+        // schedule one fetch right when the snooze ends
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(
             fetchOverdueGuests,
@@ -78,6 +85,7 @@ export default function AlertReminderModal() {
         );
     };
 
+    /* ---------- checkout ---------- */
     const handleCheckOut = () => {
         if (!currentReminder?.logId) return;
 
@@ -89,7 +97,7 @@ export default function AlertReminderModal() {
                     addToast({
                         title: "Guest Checked Out",
                         description: `${currentReminder.guest} has been successfully checked out.`,
-                        color: success,
+                        color: "success",
                     });
                     setIsOpen(false);
                     localStorage.removeItem(REMINDER_KEY); // reset snooze for next guest
@@ -99,7 +107,7 @@ export default function AlertReminderModal() {
                         title: "Checkout Failed",
                         description:
                             "An error occurred while checking out the guest.",
-                        color: danger,
+                        color: "danger",
                     }),
             }
         );
@@ -108,7 +116,9 @@ export default function AlertReminderModal() {
     return (
         <Modal
             isOpen={isOpen}
-            onClose={() => setIsOpen(false)}
+            onClose={
+                handleClose
+            }
             placement="center"
             backdrop="blur"
         >
@@ -123,14 +133,14 @@ export default function AlertReminderModal() {
                             <>
                                 <p className="mb-4">
                                     <strong>{currentReminder.guest}</strong> has
-                                    not checked out after{" "}
+                                    not checked out after&nbsp;
                                     <strong>
                                         {currentReminder.hoursOverdue} hour(s)
                                     </strong>
                                     .
                                 </p>
                                 <p>
-                                    Checked in at:{" "}
+                                    Checked in at:&nbsp;
                                     {formatLocalDateTime(
                                         currentReminder.checkInTime
                                     )}
