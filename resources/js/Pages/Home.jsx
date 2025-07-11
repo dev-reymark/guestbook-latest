@@ -1,7 +1,6 @@
 import { Head, Link } from "@inertiajs/react";
 import {
     Card,
-    CardFooter,
     CardHeader,
     Divider,
     Image,
@@ -19,11 +18,10 @@ import "swiper/css/scrollbar";
 import { useEffect, useState, useRef } from "react";
 import AlertReminderModal from "@/Components/Guest/AlertReminderModal";
 import useNetworkStatus from "@/hooks/useNetworkStatus";
-import { addToast } from "@heroui/react";
-import { Inertia } from "@inertiajs/inertia";
 import { MdWifiOff } from "react-icons/md";
 
 export default function Home({ mediaUrls = [] }) {
+    console.log('mediaUrls', mediaUrls);
     const [currentTime, setCurrentTime] = useState(new Date());
     const audioRef = useRef(null);
 
@@ -95,7 +93,7 @@ export default function Home({ mediaUrls = [] }) {
                                     <p className="text-sm text-gray-600">
                                         You are currently offline. Some features
                                         may be unavailable. Please reconnect to
-                                        continue using all functionality.
+                                        continue.
                                     </p>
                                 </div>
                             </ModalBody>
@@ -193,10 +191,12 @@ export default function Home({ mediaUrls = [] }) {
                                         className="mx-auto"
                                     />
                                 </CardHeader>
+
                                 <Divider />
-                                <CardFooter className="flex flex-col gap-3 sm:gap-4 p-2 sm:p-4 mt-auto">
+
+                                <div className="flex-1 flex flex-col justify-between p-2 sm:p-4">
                                     <p className="text-xs sm:text-sm text-center sm:text-left">
-                                        <span className="font-bold">
+                                        <span className="font-semibold">
                                             Privacy Notice:{" "}
                                         </span>
                                         This kiosk collects personal information
@@ -213,10 +213,12 @@ export default function Home({ mediaUrls = [] }) {
                                         consent, except where required by law.
                                     </p>
 
-                                    <p className="text-xs sm:text-sm italic text-gray-500 text-right">
-                                        — Management
-                                    </p>
-                                </CardFooter>
+                                    <div className="flex justify-end items-end mt-4">
+                                        <p className="text-xs sm:text-sm italic text-gray-500">
+                                            — By Management
+                                        </p>
+                                    </div>
+                                </div>
                             </Card>
                         </div>
                     </main>

@@ -52,8 +52,6 @@ Route::get('/reports', [ReportController::class, 'create'])->name('report.create
 
 Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-Route::get('/fetch-guest-data', [HomeController::class, 'fetchGuestData']);
-
 Route::post('/upload', [UploadController::class, 'upload'])->name('media.upload');
 Route::get('/upload', [UploadController::class, 'create'])->name('media.create');
 Route::get('/', [UploadController::class, 'index'])->name('media.index');
