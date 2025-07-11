@@ -7,63 +7,75 @@ import {
     addToast,
 } from "@heroui/react";
 import { router } from "@inertiajs/react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const REMINDER_DELAY_MINUTES = 30; // snooze length
+const POLL_INTERVAL_MINUTES = 5; // how often we poll the server
+const REMINDER_KEY = "lastDismissedReminderAt";
 
 export default function AlertReminderModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentReminder, setCurrentReminder] = useState(null);
-    const [intervalDuration] = useState(5); // in minutes
+    const timeoutRef = useRef(null);
+
+    const delayExpired = () => {
+        const last = localStorage.getItem(REMINDER_KEY);
+        if (!last) return true;
+        return Date.now() - Number(last) >= REMINDER_DELAY_MINUTES * 60_000;
+    };
+
+    const fetchOverdueGuests = useCallback(async () => {
+        if (!delayExpired()) return;
+
+        try {
+            const { data } = await axios.get("/overdue-guests", {
+                params: { threshold: 60 },
+            });
+
+            if (data.length === 0) {
+                setIsOpen(false);
+                return;
+            }
+
+            const mostOverdue = data.reduce((p, c) =>
+                new Date(p.check_in_time) < new Date(c.check_in_time) ? p : c
+            );
+            const checkInTime = new Date(mostOverdue.check_in_time);
+            const hoursOverdue = Math.floor(
+                (Date.now() - checkInTime) / 3_600_000
+            );
+
+            setCurrentReminder({
+                guest: mostOverdue.guest.name,
+                checkInTime,
+                hoursOverdue,
+                logId: mostOverdue.id,
+            });
+            setIsOpen(true);
+        } catch (err) {
+            console.error("Failed to fetch overdue guests:", err);
+        }
+    }, []);
 
     useEffect(() => {
-        const fetchOverdueGuests = async () => {
-            try {
-                const response = await axios.get("/overdue-guests", {
-                    params: { threshold: 60 }, // overdue threshold
-                });
-
-                const guests = response.data;
-                console.log(guests);
-
-
-                if (guests.length > 0) {
-                    const mostOverdue = guests.reduce((prev, curr) =>
-                        new Date(prev.check_in_time) <
-                        new Date(curr.check_in_time)
-                            ? prev
-                            : curr
-                    );
-
-                    const checkInTime = new Date(mostOverdue.check_in_time);
-                    const hoursOverdue = Math.floor(
-                        (Date.now() - checkInTime.getTime()) / (60 * 60 * 1000)
-                    );
-
-                    setCurrentReminder({
-                        guest: mostOverdue.guest.name,
-                        checkInTime,
-                        hoursOverdue,
-                        logId: mostOverdue.id,
-                    });
-                    setIsOpen(true);
-                } else {
-                    setIsOpen(false);
-                }
-            } catch (error) {
-                console.error("Failed to fetch overdue guests:", error);
-            }
-        };
-
-        fetchOverdueGuests();
-        const interval = setInterval(
+        fetchOverdueGuests(); // initial run
+        const poll = setInterval(
             fetchOverdueGuests,
-            intervalDuration * 60 * 1000
+            POLL_INTERVAL_MINUTES * 60_000
         );
-        return () => clearInterval(interval);
-    }, [intervalDuration]);
+        return () => clearInterval(poll);
+    }, [fetchOverdueGuests]);
 
     const handleClose = () => {
         setIsOpen(false);
-        setTimeout(() => setIsOpen(true), 10 * 60 * 1000); // re-show after 10 mins
+        localStorage.setItem(REMINDER_KEY, Date.now().toString());
+
+        // Fire ONE fetch when the snooze expires so the user doesn't rely on polling
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = setTimeout(
+            fetchOverdueGuests,
+            REMINDER_DELAY_MINUTES * 60_000
+        );
     };
 
     const handleCheckOut = () => {
@@ -80,15 +92,15 @@ export default function AlertReminderModal() {
                         color: success,
                     });
                     setIsOpen(false);
+                    localStorage.removeItem(REMINDER_KEY); // reset snooze for next guest
                 },
-                onError: () => {
+                onError: () =>
                     addToast({
                         title: "Checkout Failed",
                         description:
                             "An error occurred while checking out the guest.",
                         color: danger,
-                    });
-                },
+                    }),
             }
         );
     };
@@ -104,8 +116,9 @@ export default function AlertReminderModal() {
                 <ModalBody className="p-6">
                     <div className="text-center">
                         <h3 className="text-lg font-bold mb-2">
-                            Overdue Check-out Reminder
+                            Overdue Check‑out Reminder
                         </h3>
+
                         {currentReminder && (
                             <>
                                 <p className="mb-4">
@@ -124,6 +137,7 @@ export default function AlertReminderModal() {
                                 </p>
                             </>
                         )}
+
                         <div className="mt-6 flex justify-center gap-3">
                             <Button color="primary" onPress={handleCheckOut}>
                                 Check Out Now
