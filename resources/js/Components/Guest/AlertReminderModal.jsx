@@ -18,10 +18,11 @@ export default function AlertReminderModal() {
         const fetchOverdueGuests = async () => {
             try {
                 const response = await axios.get("/overdue-guests", {
-                    params: { threshold: 30 }, // overdue threshold
+                    params: { threshold: 60 }, // overdue threshold
                 });
 
                 const guests = response.data;
+                console.log(guests);
 
 
                 if (guests.length > 0) {

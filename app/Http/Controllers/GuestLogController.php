@@ -6,6 +6,7 @@ use App\Models\GuestLog;
 use App\Models\Guest;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class GuestLogController extends Controller
@@ -135,9 +136,11 @@ class GuestLogController extends Controller
         $now = Carbon::now();
         $overdueThreshold = $now->copy()->subMinutes($thresholdMinutes);
         $maxWindow = $now->copy()->subHours(48);
+        $excludePurposes = ['OJT/Interns'];
 
         $overdueGuests = GuestLog::whereNull('check_out_time')
             ->whereBetween('check_in_time', [$maxWindow, $overdueThreshold])
+            ->whereNotIn(DB::raw('LOWER(purpose_of_visit)'), array_map('strtolower', $excludePurposes))
             ->with('guest')
             ->orderBy('check_in_time')
             ->get();
