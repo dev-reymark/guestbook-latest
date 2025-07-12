@@ -8,6 +8,6 @@ class ReportController extends Controller
 {
     public function create()
     {
-        return inertia('Report/GuestReport');
+        return inertia('Admin/Report/GuestReport');
     }
 }

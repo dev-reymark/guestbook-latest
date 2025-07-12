@@ -14,9 +14,9 @@ use App\Http\Controllers\DashboardController;
 Route::get('/', function () {
     return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
+        // 'canRegister' => Route::has('register'),
+        // 'laravelVersion' => Application::VERSION,
+        // 'phpVersion' => PHP_VERSION,
     ]);
 });
 
@@ -29,24 +29,26 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/guests', [GuestController::class, 'index'])->name('guest.index');
+    Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
     Route::get('/generate-report', [GuestController::class, 'generateReport'])->name('guest.generateReport');
 
-    Route::get('/guestlogs', [GuestLogController::class, 'index'])->name('guest.checkout.index');
+    Route::get('/guestlogs', [GuestLogController::class, 'index'])->name('guestlogs.index');
     Route::delete('/guests/logs/{guestId}', [GuestLogController::class, 'destroy'])->name('guest.log.destroy');
     Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
     Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
     Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
 
 
-    Route::get('/reports', [ReportController::class, 'create'])->name('report.create');
+    Route::get('/reports', [ReportController::class, 'create'])->name('reports.create');
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    Route::get('/upload/all', [UploadController::class, 'show']);
-    Route::post('/upload', [UploadController::class, 'upload'])->name('media.upload');
-    Route::get('/upload', [UploadController::class, 'create'])->name('media.create');
-    Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
+    Route::prefix('/media')->group(function () {
+        Route::get('/', [UploadController::class, 'show'])->name('media.show');
+        Route::post('/', [UploadController::class, 'upload'])->name('media.upload');
+        Route::get('/', [UploadController::class, 'create'])->name('media.create');
+        Route::delete('/{id}', [UploadController::class, 'destroy']);
+    });
 });
 
 Route::middleware('guest')->group(function () {

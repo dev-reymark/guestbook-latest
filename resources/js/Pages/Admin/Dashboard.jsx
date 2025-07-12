@@ -6,142 +6,273 @@ export default function Dashboard({
     auth,
     totalRegisteredGuest,
     guestsRegisteredLastWeek,
-    percentChange,
+    guestsPercentChange,
     totalGuestLogs,
     guestLogsLastWeek,
     guestLogsPercentChange,
 }) {
+    // Format large numbers for better readability
+    const formatNumber = (num) => {
+        return new Intl.NumberFormat().format(num);
+    };
+
+    // Determine trend indicator (up/down) and color
+    const getTrendIndicator = (percentChange) => {
+        const isPositive = percentChange >= 0;
+        return {
+            icon: isPositive ? (
+                <svg
+                    className="inline-block size-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        fillRule="evenodd"
+                        d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"
+                    />
+                </svg>
+            ) : (
+                <svg
+                    className="inline-block size-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    viewBox="0 0 16 16"
+                >
+                    <path
+                        fillRule="evenodd"
+                        d="M7.022 1.566a1.13 1.13 0 0 1 1.96 0l6.857 11.667c.457.778-.092 1.767-.98 1.767H1.144c-.889 0-1.437-.99-.98-1.767L7.022 1.566z"
+                        transform="rotate(180 8 8)"
+                    />
+                </svg>
+            ),
+            color: isPositive ? "text-green-600" : "text-red-600",
+            text: isPositive ? "increase" : "decrease",
+        };
+    };
+
+    const guestTrend = getTrendIndicator(guestsPercentChange);
+    const logTrend = getTrendIndicator(guestLogsPercentChange);
+
     return (
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 className="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
                     Dashboard
                 </h2>
             }
         >
             <Head title="Dashboard" />
 
-            <div className="py-12 p-4">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 py-8">
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
-                        <Card as={Link} isPressable href={route("guest.index")}>
-                            <div className="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-                                <div className="inline-flex justify-center items-center">
-                                    <span className="size-2 inline-block bg-primary rounded-full me-2"></span>
-                                    <span className="text-xs font-semibold uppercase text-gray-600 dark:text-neutral-400">
-                                        Total Registered Guest
+            <div className="py-6 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    {/* Welcome message */}
+                    <div className="mb-8">
+                        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+                            Welcome back, {auth.user.name}!
+                        </h1>
+                        <p className="mt-1 text-gray-600 dark:text-gray-400">
+                            Here&apos;s an overview of your dashboard.
+                        </p>
+                    </div>
+
+                    {/* Stats cards grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Registered Guests Card */}
+                        <Card
+                            as={Link}
+                            isPressable
+                            href={route("guests.index")}
+                            className="hover:shadow-lg transition-shadow duration-200"
+                        >
+                            <div className="p-6 bg-white dark:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                                        Registered Guests
+                                    </h3>
+                                    <span className="p-2 rounded-lg bg-primary-100 dark:bg-primary-900/50">
+                                        <svg
+                                            className="w-6 h-6 text-primary-600 dark:text-primary-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                                            />
+                                        </svg>
                                     </span>
                                 </div>
 
-                                <div className="text-center">
-                                    <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                                        {totalRegisteredGuest}
-                                    </h3>
+                                <div className="mb-2">
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                        {formatNumber(totalRegisteredGuest)}
+                                    </p>
                                 </div>
 
-                                <dl className="flex justify-center items-center divide-x divide-gray-200 dark:divide-neutral-800">
-                                    <dt className="pe-3">
-                                        <span
-                                            className={
-                                                percentChange >= 0
-                                                    ? "text-green-600"
-                                                    : "text-red-600"
-                                            }
-                                        >
-                                            <svg
-                                                className="inline-block size-4 self-center"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"
-                                                />
-                                            </svg>
-                                            <span className="inline-block text-sm">
-                                                {percentChange?.toFixed(1)}%
-                                            </span>
+                                <div className="flex items-center text-sm">
+                                    <span
+                                        className={`inline-flex items-center ${guestTrend.color}`}
+                                    >
+                                        {guestTrend.icon}
+                                        <span className="ml-1 font-medium">
+                                            {Math.abs(
+                                                guestsPercentChange?.toFixed(1)
+                                            )}
+                                            % {guestTrend.text}
                                         </span>
-                                        <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                                            change
-                                        </span>
-                                    </dt>
-
-                                    <dd className="text-start ps-3">
-                                        <span className="text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                            {guestsRegisteredLastWeek}
-                                        </span>
-                                        <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                                            last week
-                                        </span>
-                                    </dd>
-                                </dl>
+                                    </span>
+                                    <span className="text-gray-500 dark:text-gray-400 ml-2">
+                                        vs last week (
+                                        {formatNumber(guestsRegisteredLastWeek)}
+                                        )
+                                    </span>
+                                </div>
                             </div>
                         </Card>
 
-                        <Card as={Link} isPressable href={route("guest.log.index")}>
-                            <div className="flex flex-col gap-y-3 lg:gap-y-5 p-4 md:p-5 bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-                                <div className="inline-flex justify-center items-center">
-                                    <span className="size-2 inline-block bg-green-500 rounded-full me-2"></span>
-                                    <span className="text-xs font-semibold uppercase text-gray-600 dark:text-neutral-400">
-                                        Successful Guest Logs
+                        {/* Guest Logs Card */}
+                        <Card
+                            as={Link}
+                            isPressable
+                            href={route("guestlogs.index")}
+                            className="hover:shadow-lg transition-shadow duration-200"
+                        >
+                            <div className="p-6 bg-white dark:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-700">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+                                        Guest Logs
+                                    </h3>
+                                    <span className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50">
+                                        <svg
+                                            className="w-6 h-6 text-green-600 dark:text-green-400"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                            />
+                                        </svg>
                                     </span>
                                 </div>
 
-                                <div className="text-center">
-                                    <h3 className="text-3xl sm:text-4xl lg:text-5xl font-semibold text-gray-800 dark:text-neutral-200">
-                                        {totalGuestLogs}
-                                    </h3>
+                                <div className="mb-2">
+                                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
+                                        {formatNumber(totalGuestLogs)}
+                                    </p>
                                 </div>
 
-                                <dl className="flex justify-center items-center divide-x divide-gray-200 dark:divide-neutral-800">
-                                    <dt className="pe-3">
-                                        <span
-                                            className={
-                                                guestLogsPercentChange >= 0
-                                                    ? "text-green-600"
-                                                    : "text-red-600"
-                                            }
-                                        >
-                                            <svg
-                                                className="inline-block size-4 self-center"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="16"
-                                                height="16"
-                                                fill="currentColor"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"
-                                                />
-                                            </svg>
-                                            <span className="inline-block text-sm">
-                                                {guestLogsPercentChange?.toFixed(
+                                <div className="flex items-center text-sm">
+                                    <span
+                                        className={`inline-flex items-center ${logTrend.color}`}
+                                    >
+                                        {logTrend.icon}
+                                        <span className="ml-1 font-medium">
+                                            {Math.abs(
+                                                guestLogsPercentChange?.toFixed(
                                                     1
-                                                )}
-                                                %
-                                            </span>
+                                                )
+                                            )}
+                                            % {logTrend.text}
                                         </span>
-                                        <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                                            change
-                                        </span>
-                                    </dt>
-                                    <dd className="text-start ps-3">
-                                        <span className="text-sm font-semibold text-gray-800 dark:text-neutral-200">
-                                            {guestLogsLastWeek}
-                                        </span>
-                                        <span className="block text-sm text-gray-500 dark:text-neutral-500">
-                                            last week
-                                        </span>
-                                    </dd>
-                                </dl>
+                                    </span>
+                                    <span className="text-gray-500 dark:text-gray-400 ml-2">
+                                        vs last week (
+                                        {formatNumber(guestLogsLastWeek)})
+                                    </span>
+                                </div>
                             </div>
                         </Card>
+                    </div>
+
+                    {/* Additional content area for future expansion */}
+                    <div className="mt-8 bg-white dark:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-700 p-6">
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                            Quick Actions
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <Link
+                                href={route("guests.index")}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <svg
+                                        className="w-5 h-5 text-primary-600 dark:text-primary-400 mr-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                                        />
+                                    </svg>
+                                    <span className="font-medium">
+                                        View Registered Guest
+                                    </span>
+                                </div>
+                            </Link>
+                            <Link
+                                href={route("guestlogs.index")}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <svg
+                                        className="w-5 h-5 text-green-600 dark:text-green-400 mr-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
+                                    <span className="font-medium">
+                                        View Guest Logs
+                                    </span>
+                                </div>
+                            </Link>
+                            <Link
+                                href={route("reports.create")}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <svg
+                                        className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
+                                    <span className="font-medium">
+                                        View Reports
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

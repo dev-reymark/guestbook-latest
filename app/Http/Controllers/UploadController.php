@@ -9,7 +9,7 @@ class UploadController extends Controller
 {
     public function create()
     {
-        return inertia('Upload/Index');
+        return inertia('Admin/Upload/Index');
     }
     public function upload(Request $request)
     {
@@ -19,10 +19,6 @@ class UploadController extends Controller
 
 
         Upload::create([
-            'media_url' => $request->media_url
-        ]);
-
-        return inertia('Upload/UploadForm', [
             'media_url' => $request->media_url
         ]);
     }

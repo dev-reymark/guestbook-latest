@@ -39,14 +39,14 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                                 <NavLink
-                                    href={route("guest.index")}
-                                    active={route().current("guest.index")}
+                                    href={route("guests.index")}
+                                    active={route().current("guests.index")}
                                 >
                                     Guest
                                 </NavLink>
                                 <NavLink
-                                    href={route("guest.log.index")}
-                                    active={route().current("guest.log.index")}
+                                    href={route("guestlogs.index")}
+                                    active={route().current("guestlogs.index")}
                                 >
                                     Logs
                                 </NavLink>
@@ -57,8 +57,8 @@ export default function Authenticated({ user, header, children }) {
                                     Upload
                                 </NavLink>
                                 <NavLink
-                                    href={route("report.create")}
-                                    active={route().current("report.create")}
+                                    href={route("reports.create")}
+                                    active={route().current("reports.create")}
                                 >
                                     Reports
                                 </NavLink>
@@ -160,14 +160,14 @@ export default function Authenticated({ user, header, children }) {
                             Dashboard
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route("guest.index")}
-                            active={route().current("guest.index")}
+                            href={route("guests.index")}
+                            active={route().current("guests.index")}
                         >
                             Guest
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route("guest.log.index")}
-                            active={route().current("guest.log.index")}
+                            href={route("guestlogs.index")}
+                            active={route().current("guestlogs.index")}
                         >
                             Logs
                         </ResponsiveNavLink>
@@ -178,8 +178,8 @@ export default function Authenticated({ user, header, children }) {
                             Upload
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href={route("report.create")}
-                            active={route().current("report.create")}
+                            href={route("reports.create")}
+                            active={route().current("reports.create")}
                         >
                             Reports
                         </ResponsiveNavLink>

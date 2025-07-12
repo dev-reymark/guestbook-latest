@@ -59,17 +59,9 @@ class GuestController extends Controller
     public function index()
     {
         $guests = Guest::all();
-        return inertia('Guest/Index', [
+        return inertia('Admin/Guest/Index', [
             'guests' => $guests
         ]);
-    }
-
-    public function destroy($id)
-    {
-        $guest = Guest::findOrFail($id);
-        $guest->delete();
-
-        return redirect()->route('guest.index')->with('success', 'Guest deleted successfully!');
     }
 
     public function generateReport()

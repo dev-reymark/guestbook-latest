@@ -151,8 +151,11 @@ class GuestLogController extends Controller
 
     public function index()
     {
-        $guestLogs = GuestLog::with('guest')->get();
-        return inertia('GuestLog/Index', [
+        $guestLogs = GuestLog::with('guest')
+            ->orderBy('guest_id', 'asc')
+            ->get();
+
+        return inertia('Admin/GuestLog/Index', [
             'guestLogs' => $guestLogs
         ]);
     }
