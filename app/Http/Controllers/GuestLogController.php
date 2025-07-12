@@ -15,7 +15,8 @@ class GuestLogController extends Controller
     {
         $guests = Guest::all();
         return inertia('Guest/CheckIn', [
-            'guests' => $guests
+            'guests' => $guests,
+            'name' => session('name'),
         ]);
     }
 
@@ -49,7 +50,7 @@ class GuestLogController extends Controller
                 'meeting_with' => $validated['meeting_with']
             ]);
 
-            return redirect()->route('guest.log.show')
+            return redirect()->route('guest.checkout.show')
                 ->with('success', 'Check-in recorded!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('Guest check-in validation failed', [
@@ -99,7 +100,7 @@ class GuestLogController extends Controller
                     'guest_id' => $guestLog->guest_id,
                 ]);
 
-                return redirect()->route('guest.log.show')
+                return redirect()->route('guest.checkout.show')
                     ->with('error', 'Guest has already checked out');
             }
 
@@ -115,8 +116,8 @@ class GuestLogController extends Controller
                 'guest_name' => $guestLog->guest->name,
             ]);
 
-            return redirect()->route('guest.log.show')
-                ->with('success', 'Guest checked out successfully!');
+            return redirect()->route('guest.checkout.show')
+                ->with('success', 'Check out recorded. Thank you!');
         } catch (\Exception $e) {
             // Log unexpected errors
             Log::error('Guest check-out failed', [
@@ -125,7 +126,7 @@ class GuestLogController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return redirect()->route('guest.log.show')
+            return redirect()->route('guest.checkout.show')
                 ->with('error', 'Check-out failed. Please try again or contact support.');
         }
     }

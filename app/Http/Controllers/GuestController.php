@@ -8,22 +8,17 @@ use Illuminate\Support\Facades\Log;
 
 class GuestController extends Controller
 {
-    public function create()
-    {
-        return inertia('Guest/RegisterForm');
-    }
-
     public function store(Request $request)
     {
         Log::info('Guest registration request received', ['request' => $request->all()]);
 
         try {
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|unique:guests,name|max:255',
                 'id_type' => 'nullable|string|max:255',
                 'id_number' => 'nullable|string|max:255',
                 'email' => 'nullable|email|unique:guests,email',
-                'phone' => 'nullable|string|max:20',
+                'phone' => 'nullable|string|unique:guests,phone|max:20',
                 'company' => 'required|string|max:255',
                 'address' => 'nullable|string|max:255',
                 'is_agreed' => 'required|boolean|accepted',
@@ -37,8 +32,10 @@ class GuestController extends Controller
                 'email' => $guest->email,
             ]);
 
-            return redirect()->route('guestlog.create')
-                ->with('success', 'Registration successful! You can now proceed to check-in.');
+            return redirect()->route('guest.checkin.create')->with([
+                'success' => 'Registration successful! You can now proceed to check-in.',
+                'name' => $request->name
+            ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('Guest registration validation failed', [
                 'errors' => $e->errors(),

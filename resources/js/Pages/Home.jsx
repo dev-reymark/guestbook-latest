@@ -21,7 +21,7 @@ import useNetworkStatus from "@/hooks/useNetworkStatus";
 import { MdWifiOff } from "react-icons/md";
 
 export default function Home({ mediaUrls = [] }) {
-    console.log('mediaUrls', mediaUrls);
+    // console.log('mediaUrls', mediaUrls);
     const [currentTime, setCurrentTime] = useState(new Date());
     const audioRef = useRef(null);
 
@@ -147,7 +147,7 @@ export default function Home({ mediaUrls = [] }) {
                             <div className="grid grid-cols-2 gap-4 h-[160px] sm:h-[200px]">
                                 <Card
                                     as={Link}
-                                    href={route("guestlog.create")}
+                                    href={route("guest.checkin.create")}
                                     className="bg-success-50 hover:scale-[1.02] transition-transform"
                                 >
                                     <div className="flex items-center justify-center h-full p-4">
@@ -165,7 +165,7 @@ export default function Home({ mediaUrls = [] }) {
                                 <Card
                                     as={Link}
                                     isPressable
-                                    href={route("guest.log.show")}
+                                    href={route("guest.checkout.show")}
                                     className="bg-warning-50 hover:scale-[1.02] transition-transform"
                                 >
                                     <div className="flex items-center justify-center h-full p-4">

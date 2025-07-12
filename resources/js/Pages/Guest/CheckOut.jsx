@@ -13,13 +13,13 @@ import {
     SelectItem,
     Card,
     Divider,
+    addToast,
 } from "@heroui/react";
 import Swal from "sweetalert2";
 import React, { useEffect, useState } from "react";
 import { SearchIcon } from "@/Components/Icons";
 import AlertReminderModal from "@/Components/Guest/AlertReminderModal";
 import { useAutoRedirect } from "@/hooks/useAutoRedirect";
-import { useFlashMessages } from "@/hooks/useflashMessages";
 import { formatLocalDateTime } from "@/utils/date";
 import { BiHomeSmile } from "react-icons/bi";
 
@@ -32,7 +32,6 @@ export default function CheckOut({ guestLogs }) {
     const [processingId, setProcessingId] = useState(null);
 
     useAutoRedirect();
-    useFlashMessages();
 
     useEffect(() => {
         const filterLogsByInterval = () => {
@@ -89,22 +88,20 @@ export default function CheckOut({ guestLogs }) {
 
         try {
             router.post(
-                `/guest/log/check-out/${guestLogId}`,
+                route("guest.checkout", guestLogId),
                 {},
                 {
-                    onSuccess: () => {
-                        Swal.fire({
-                            title: "Success!",
-                            text: "Guest checked out successfully",
-                            icon: "success",
-                            timer: 2000,
-                            showConfirmButton: false,
+                    onSuccess: (response) => {
+                        addToast({
+                            title: "Success",
+                            description: response.props.flash.success,
+                            color: "success",
                         });
                     },
-                    onError: () => {
+                    onError: (errors) => {
                         Swal.fire({
                             title: "Error!",
-                            text: "Failed to check out guest",
+                            text: errors.message,
                             icon: "error",
                         });
                     },
@@ -145,7 +142,7 @@ export default function CheckOut({ guestLogs }) {
                                 <div className="flex gap-2">
                                     <Button
                                         as={Link}
-                                        href={route("guestlog.create")}
+                                        href={route("guest.checkin.create")}
                                         color="primary"
                                         variant="shadow"
                                     >
@@ -176,159 +173,154 @@ export default function CheckOut({ guestLogs }) {
                                 />
                             </div>
 
-                            {/* <div className="h-[calc(100vh-500px)] overflow-auto"> */}
-                                <Table
-                                    aria-label="Guests Table"
-                                    // isCompact
-                                    topContent={
-                                        <div className="flex justify-between items-center mt-4">
-                                            <div className="flex gap-2 w-[35%]">
-                                                <Select
-                                                    size="sm"
-                                                    variant="faded"
-                                                    placeholder="Items Per Page"
-                                                    value={itemsPerPage.toString()}
-                                                    onChange={(e) =>
-                                                        setItemsPerPage(
-                                                            Number(
-                                                                e.target.value
-                                                            )
-                                                        )
-                                                    }
+                            <Table
+                                aria-label="Guests Table"
+                                topContent={
+                                    <div className="flex justify-between items-center mt-4">
+                                        <div className="flex gap-2 w-[35%]">
+                                            <Select
+                                                size="sm"
+                                                variant="faded"
+                                                placeholder="Items Per Page"
+                                                value={itemsPerPage.toString()}
+                                                onChange={(e) =>
+                                                    setItemsPerPage(
+                                                        Number(e.target.value)
+                                                    )
+                                                }
+                                                aria-label="Items per page"
+                                            >
+                                                <SelectItem value="5" key="5">
+                                                    5
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="10"
+                                                    key={"10"}
                                                 >
-                                                    <SelectItem
-                                                        value="5"
-                                                        key="5"
-                                                    >
-                                                        5
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="10"
-                                                        key={"10"}
-                                                    >
-                                                        10
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="15"
-                                                        key={"15"}
-                                                    >
-                                                        15
-                                                    </SelectItem>
-                                                </Select>
-                                                <Select
-                                                    size="sm"
-                                                    variant="faded"
-                                                    placeholder="Past 24 Hours"
-                                                    value={selectedInterval}
-                                                    onChange={(e) =>
-                                                        setSelectedInterval(
-                                                            e.target.value
-                                                        )
-                                                    }
+                                                    10
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="15"
+                                                    key={"15"}
                                                 >
-                                                    <SelectItem
-                                                        value="current"
-                                                        key="current"
-                                                    >
-                                                        All Time
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="past24Hours"
-                                                        key="past24Hours"
-                                                    >
-                                                        Past 24 Hours
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="past7Days"
-                                                        key="past7Days"
-                                                    >
-                                                        Past 7 Days
-                                                    </SelectItem>
-                                                    <SelectItem
-                                                        value="past30Days"
-                                                        key="past30Days"
-                                                    >
-                                                        Past 30 Days
-                                                    </SelectItem>
-                                                </Select>
-                                            </div>
-                                            <p className="text-sm italic text-default-500">
-                                                Showing{" "}
-                                                {Math.min(
-                                                    indexOfLastItem,
-                                                    filteredGuestLogs.length
-                                                )}{" "}
-                                                of {filteredGuestLogs.length}{" "}
-                                                records
-                                            </p>
+                                                    15
+                                                </SelectItem>
+                                            </Select>
+                                            <Select
+                                                size="sm"
+                                                variant="faded"
+                                                placeholder="Past 24 Hours"
+                                                value={selectedInterval}
+                                                onChange={(e) =>
+                                                    setSelectedInterval(
+                                                        e.target.value
+                                                    )
+                                                }
+                                                aria-label="Time interval filter"
+                                            >
+                                                <SelectItem
+                                                    value="current"
+                                                    key="current"
+                                                >
+                                                    All Time
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="past24Hours"
+                                                    key="past24Hours"
+                                                >
+                                                    Past 24 Hours
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="past7Days"
+                                                    key="past7Days"
+                                                >
+                                                    Past 7 Days
+                                                </SelectItem>
+                                                <SelectItem
+                                                    value="past30Days"
+                                                    key="past30Days"
+                                                >
+                                                    Past 30 Days
+                                                </SelectItem>
+                                            </Select>
                                         </div>
-                                    }
-                                >
-                                    <TableHeader>
-                                        <TableColumn>Guest ID</TableColumn>
-                                        <TableColumn>Guest Name</TableColumn>
-                                        <TableColumn>Meeting With</TableColumn>
-                                        <TableColumn>
-                                            Purpose of Visit
-                                        </TableColumn>
-                                        <TableColumn>Check In</TableColumn>
-                                        <TableColumn>Check Out</TableColumn>
-                                    </TableHeader>
-                                    <TableBody
-                                        emptyContent={"No log for today."}
-                                    >
-                                        {currentItems
-                                            .sort(
-                                                (a, b) =>
-                                                    new Date(b.created_at) -
-                                                    new Date(a.created_at)
-                                            )
-                                            .map((guestLog) => (
-                                                <TableRow key={guestLog.id}>
-                                                    <TableCell>
-                                                        {guestLog.guest_id}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {guestLog.guest.name}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {guestLog.meeting_with ||
-                                                            "--"}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {
-                                                            guestLog.purpose_of_visit
-                                                        }
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {formatLocalDateTime(
-                                                            guestLog.check_in_time
-                                                        )}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {guestLog.check_out_time ? (
-                                                            formatLocalDateTime(
-                                                                guestLog.check_out_time
-                                                            )
-                                                        ) : (
-                                                            <Button
-                                                                onPress={() =>
-                                                                    handleCheckOut(
-                                                                        guestLog.id
-                                                                    )
-                                                                }
-                                                                color="success"
-                                                                size="sm"
-                                                            >
-                                                                Check Out
-                                                            </Button>
-                                                        )}
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                    </TableBody>
-                                </Table>
-                            {/* </div> */}
+                                        <p className="text-sm italic text-default-500">
+                                            Showing{" "}
+                                            {Math.min(
+                                                indexOfLastItem,
+                                                filteredGuestLogs.length
+                                            )}{" "}
+                                            of {filteredGuestLogs.length}{" "}
+                                            records
+                                        </p>
+                                    </div>
+                                }
+                            >
+                                <TableHeader>
+                                    <TableColumn>Guest ID</TableColumn>
+                                    <TableColumn>Guest Name</TableColumn>
+                                    <TableColumn>Meeting With</TableColumn>
+                                    <TableColumn>Purpose of Visit</TableColumn>
+                                    <TableColumn>Check In</TableColumn>
+                                    <TableColumn>Check Out</TableColumn>
+                                </TableHeader>
+                                <TableBody emptyContent={"No log for today."}>
+                                    {currentItems
+                                        .sort(
+                                            (a, b) =>
+                                                new Date(b.created_at) -
+                                                new Date(a.created_at)
+                                        )
+                                        .map((guestLog) => (
+                                            <TableRow key={guestLog.id}>
+                                                <TableCell>
+                                                    {guestLog.guest_id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {guestLog.guest.name}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {guestLog.meeting_with ||
+                                                        "--"}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {guestLog.purpose_of_visit}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {formatLocalDateTime(
+                                                        guestLog.check_in_time
+                                                    )}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {guestLog.check_out_time ? (
+                                                        formatLocalDateTime(
+                                                            guestLog.check_out_time
+                                                        )
+                                                    ) : (
+                                                        <Button
+                                                            onPress={() =>
+                                                                handleCheckOut(
+                                                                    guestLog.id
+                                                                )
+                                                            }
+                                                            color="success"
+                                                            size="sm"
+                                                            isLoading={
+                                                                processingId ===
+                                                                guestLog.id
+                                                            }
+                                                        >
+                                                            {processingId ===
+                                                            guestLog.id
+                                                                ? "Please wait..."
+                                                                : "Check-Out"}
+                                                        </Button>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                </TableBody>
+                            </Table>
                             <div className="flex w-full justify-center">
                                 <Pagination
                                     color="primary"

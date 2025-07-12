@@ -19,6 +19,7 @@ export default function PrivacyModal({
     isChecked,
     onCheckboxChange,
     onAgree,
+    onCancel,
 }) {
     const iconClasses =
         "text-xl text-default-500 pointer-events-none flex-shrink-0";
@@ -28,7 +29,7 @@ export default function PrivacyModal({
             isOpen={isOpen}
             onOpenChange={onOpenChange}
             scrollBehavior="inside"
-            size="xl"
+            size="2xl"
             placement="center"
             isDismissable={false}
             isKeyboardDismissDisabled
@@ -44,10 +45,11 @@ export default function PrivacyModal({
                     </h2>
                 </ModalHeader>
                 <ModalBody>
-                    <Listbox aria-label="Guest Consent">
+                    <Listbox aria-label="Guestbook privacy policy sections">
                         <ListboxSection title="" showDivider>
                             <ListboxItem
                                 key="header"
+                                textValue="Privacy notice header"
                                 description={
                                     <>
                                         <p>
@@ -64,6 +66,7 @@ export default function PrivacyModal({
                             ></ListboxItem>
                             <ListboxItem
                                 key="information-collection"
+                                textValue="Information Collection"
                                 description={
                                     <>
                                         <p>
@@ -85,6 +88,7 @@ export default function PrivacyModal({
                             </ListboxItem>
                             <ListboxItem
                                 key="use-of-information"
+                                textValue="Use of Information"
                                 description={
                                     <>
                                         <p>
@@ -107,6 +111,7 @@ export default function PrivacyModal({
                             </ListboxItem>
                             <ListboxItem
                                 key="data-protection"
+                                textValue="Data Protection"
                                 description="We take appropriate measures to safeguard your data and maintain its confidentiality. Your information is not sold or shared with third parties unless required by law."
                                 startContent={
                                     <FiShield className={iconClasses} />
@@ -116,6 +121,7 @@ export default function PrivacyModal({
                             </ListboxItem>
                             <ListboxItem
                                 key="consent"
+                                textValue="Consent"
                                 description="By using our guest logbook and submitting information through the form, you consent to the terms outlined in this privacy policy."
                                 startContent={
                                     <FiCheckCircle className={iconClasses} />
@@ -128,6 +134,7 @@ export default function PrivacyModal({
                         <ListboxSection>
                             <ListboxItem
                                 key="changes-to-privacy-notice"
+                                textValue="Changes to Privacy Notice"
                                 description={
                                     <>
                                         <p>
@@ -144,6 +151,7 @@ export default function PrivacyModal({
                         <ListboxSection>
                             <ListboxItem
                                 key="contact-us"
+                                textValue="Contact Us"
                                 description={
                                     <>
                                         <p>
@@ -162,6 +170,7 @@ export default function PrivacyModal({
                         <ListboxSection>
                             <ListboxItem
                                 key="footer"
+                                textValue="Privacy notice footer"
                                 description={
                                     <>
                                         <p>
@@ -195,11 +204,7 @@ export default function PrivacyModal({
                     >
                         Continue
                     </Button>
-                    <Button
-                        color="danger"
-                        variant="flat"
-                        onPress={() => onOpenChange(false)}
-                    >
+                    <Button color="danger" variant="flat" onPress={onCancel}>
                         Cancel
                     </Button>
                 </ModalFooter>

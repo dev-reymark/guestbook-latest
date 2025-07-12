@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Head, router, usePage } from "@inertiajs/react";
 import {
     Autocomplete,
@@ -13,6 +13,7 @@ import {
     ModalHeader,
     ModalBody,
     ModalFooter,
+    addToast,
 } from "@heroui/react";
 import Swal from "sweetalert2";
 import GuestRegisterForm from "./RegisterForm";
@@ -22,11 +23,13 @@ import {
     purposeOfVisitOptions,
 } from "@/constants/guestOptions";
 import { useAutoRedirect } from "@/hooks/useAutoRedirect";
-import { useFlashMessages } from "@/hooks/useflashMessages";
+import useNetworkStatus from "@/hooks/useNetworkStatus";
+import { MdWifiOff } from "react-icons/md";
 
 export default function CheckIn({ guests }) {
+    const { name } = usePage().props;
     const [selectedGuest, setSelectedGuest] = useState(null);
-    const [searchValue, setSearchValue] = useState("");
+    const [searchValue, setSearchValue] = useState(name || "");
     const [values, setValues] = useState({
         meeting_with: "",
         purpose_of_visit: "",
@@ -37,8 +40,26 @@ export default function CheckIn({ guests }) {
     const [isGuestModalOpen, setIsGuestModalOpen] = useState(true);
     const [isCheckInModalOpen, setIsCheckInModalOpen] = useState(false);
 
-    useAutoRedirect();
-    useFlashMessages();
+    // useAutoRedirect();
+    const isOnline = useNetworkStatus();
+
+    useEffect(() => {
+        if (name && guests.length > 0) {
+            // Find the guest by name (case insensitive)
+            const foundGuest = guests.find(
+                (g) => g.name.toLowerCase() === name.toLowerCase()
+            );
+
+            if (foundGuest) {
+                setSelectedGuest(foundGuest);
+                setSearchValue(foundGuest.name);
+
+                // auto-open the check-in modal
+                //  setIsGuestModalOpen(false);
+                //  setIsCheckInModalOpen(true);
+            }
+        }
+    }, [name, guests]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,30 +89,33 @@ export default function CheckIn({ guests }) {
             check_out_time: values.check_out_time || null,
         };
 
-        router.post(`/guest/log/new/${selectedGuest.id}`, formattedValues, {
-            onSuccess: () => {
-                Swal.fire({
-                    title: "Success!",
-                    text: "Check-in recorded successfully!",
-                    icon: "success",
-                    confirmButtonText: "OK",
-                }).then(() => {
-                    router.visit(route("guest.log.show"));
-                });
-            },
-            onError: (errors) => {
-                setErrors(errors);
-                Swal.fire({
-                    title: "Validation Error",
-                    text: "Please check the form for errors",
-                    icon: "error",
-                    confirmButtonText: "OK",
-                });
-            },
-            onFinish: () => {
-                setIsProcessing(false);
-            },
-        });
+        router.post(
+            route("guest.checkin.store", selectedGuest.id),
+            formattedValues,
+            {
+                onSuccess: (response) => {
+                    addToast({
+                        title: "Success",
+                        description: response.props.flash.success,
+                        color: "success",
+                    });
+                },
+                onError: (errors) => {
+                    setErrors(errors);
+                    console.log(errors);
+                    addToast({
+                        title: "Error",
+                        description:
+                            errors.message ||
+                            "Please check the form for errors",
+                        color: "danger",
+                    });
+                },
+                onFinish: () => {
+                    setIsProcessing(false);
+                },
+            }
+        );
     };
 
     const handleCheckIn = () => {
@@ -137,6 +161,28 @@ export default function CheckIn({ guests }) {
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
             <Head title="Guest Check-In" />
+            <Modal
+                isOpen={!isOnline}
+                hideCloseButton
+                placement="center"
+                backdrop="blur"
+                isDismissable={false}
+            >
+                <ModalContent>
+                    <ModalBody className="p-6 text-center">
+                        <div className="flex flex-col items-center justify-center gap-4">
+                            <MdWifiOff className="text-red-500 text-5xl" />
+                            <h2 className="text-xl font-bold text-red-600">
+                                Offline Mode
+                            </h2>
+                            <p className="text-sm text-gray-600">
+                                You are currently offline. Some features may be
+                                unavailable. Please reconnect to continue.
+                            </p>
+                        </div>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
 
             {/* Guest Selection Modal */}
             <Modal
@@ -350,6 +396,7 @@ export default function CheckIn({ guests }) {
                                 className="mb-4"
                                 errorMessage={errors.purpose_of_visit}
                                 isInvalid={!!errors.purpose_of_visit}
+                                variant="bordered"
                             >
                                 {purposeOfVisitOptions.map((option) => (
                                     <SelectItem
@@ -374,6 +421,7 @@ export default function CheckIn({ guests }) {
                                     errorMessage={errors.check_in_time}
                                     isInvalid={!!errors.check_in_time}
                                     className="flex-1"
+                                    variant="bordered"
                                 />
                                 <Button
                                     color="primary"

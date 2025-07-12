@@ -28,34 +28,44 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/guests', [GuestController::class, 'index'])->name('guest.index');
+    Route::get('/generate-report', [GuestController::class, 'generateReport'])->name('guest.generateReport');
+
+    Route::get('/guestlogs', [GuestLogController::class, 'index'])->name('guest.checkout.index');
+    Route::delete('/guests/logs/{guestId}', [GuestLogController::class, 'destroy'])->name('guest.log.destroy');
+    Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
+    Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
+    Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
+
+
+    Route::get('/reports', [ReportController::class, 'create'])->name('report.create');
+
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    Route::get('/upload/all', [UploadController::class, 'show']);
+    Route::post('/upload', [UploadController::class, 'upload'])->name('media.upload');
+    Route::get('/upload', [UploadController::class, 'create'])->name('media.create');
+    Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
 });
 
-Route::get('/guest/register', [GuestController::class, 'create'])->name('guest.register');
-Route::post('/guest/register', [GuestController::class, 'store'])->name('guest.store');
-Route::get('/guests', [GuestController::class, 'index'])->name('guest.index');
-Route::delete('/guests/{id}', [GuestController::class, 'destroy'])->name('guest.destroy');
-Route::delete('/guests', [GuestController::class, 'destroyAll'])->name('guest.destroy_all');
-Route::get('/generate-report', [GuestController::class, 'generateReport'])->name('guest.generateReport');
+Route::middleware('guest')->group(function () {
+    Route::get('/', [UploadController::class, 'index'])->name('media.index');
 
-Route::post('/guest/log/new/{guestId}', [GuestLogController::class, 'store'])->name('guest.log.store');
-Route::get('/guest/log/new', [GuestLogController::class, 'create'])->name('guestlog.create');
-Route::get('/guest/logs', [GuestLogController::class, 'index'])->name('guest.log.index');
-Route::get('/guest/logs/all', [GuestLogController::class, 'show'])->name('guest.log.show');
-Route::delete('/guests/logs/{guestId}', [GuestLogController::class, 'destroy'])->name('guest.log.destroy');
-Route::post('/guest/log/check-out/{guestLog}', [GuestLogController::class, 'checkOut'])->name('guest.log.checkout');
-Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
-Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
-Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
-Route::get('/overdue-guests', [GuestLogController::class, 'getOverdueGuests']);
+    Route::prefix('guest')->group(function () {
+        Route::post('/register', [GuestController::class, 'store'])->name('guest.register');
 
-Route::get('/reports', [ReportController::class, 'create'])->name('report.create');
+        Route::get('/check-in', [GuestLogController::class, 'create'])->name('guest.checkin.create');
+        Route::post('/check-in/{guestId}', [GuestLogController::class, 'store'])->name('guest.checkin.store');
+        Route::get('/check-out', [GuestLogController::class, 'show'])->name('guest.checkout.show');
+        Route::post('/check-out/{guestLog}', [GuestLogController::class, 'checkOut'])->name('guest.checkout');
+    });
 
-Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/overdue-guests', [GuestLogController::class, 'getOverdueGuests']);
+});
 
-Route::post('/upload', [UploadController::class, 'upload'])->name('media.upload');
-Route::get('/upload', [UploadController::class, 'create'])->name('media.create');
-Route::get('/', [UploadController::class, 'index'])->name('media.index');
-Route::get('/upload/all', [UploadController::class, 'show']);
-Route::delete('/uploads/{id}', [UploadController::class, 'destroy']);
+
+
+
 
 require __DIR__ . '/auth.php';

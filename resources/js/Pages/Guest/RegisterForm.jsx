@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Inertia } from "@inertiajs/inertia";
 import { router, usePage } from "@inertiajs/react";
 import {
     Input,
@@ -10,11 +9,12 @@ import {
     ModalHeader,
     Select,
     SelectItem,
+    addToast,
 } from "@heroui/react";
-import Swal from "sweetalert2";
 import PrivacyModal from "@/Components/Guest/PrivacyModal";
 import { useAutoRedirect } from "@/hooks/useAutoRedirect";
-import { useFlashMessages } from "@/hooks/useflashMessages";
+import useNetworkStatus from "@/hooks/useNetworkStatus";
+import { MdWifiOff } from "react-icons/md";
 
 export default function RegisterForm() {
     const [values, setValues] = useState({
@@ -32,8 +32,8 @@ export default function RegisterForm() {
     const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
-    useAutoRedirect();
-    useFlashMessages();
+    // useAutoRedirect();
+    const isOnline = useNetworkStatus();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -68,8 +68,8 @@ export default function RegisterForm() {
         setIsProcessing(true);
 
         try {
-            router.post("/guest/register", values, {
-                onSuccess: () => {
+            router.post(route("guest.register"), values, {
+                onSuccess: (response) => {
                     setIsRegisterModalOpen(false);
                     setValues({
                         name: "",
@@ -81,14 +81,34 @@ export default function RegisterForm() {
                         id_number: "",
                         is_agreed: false,
                     });
+                    addToast({
+                        title: "Success",
+                        description: response.props.flash.success, // Access flash from response
+                        color: "success",
+                    });
+                    console.log(response);
                 },
-                onError: (err) => {
-                    setErrors(err);
-                    Swal.fire({
-                        title: "Validation Error",
-                        text: "Please check the form for errors",
-                        icon: "error",
-                        confirmButtonText: "OK",
+                onError: (errors) => {
+                    const flattenedErrors = {};
+                    if (errors.message) {
+                        // For non-validation errors
+                        flattenedErrors.message = errors.message;
+                    } else {
+                        // For validation errors
+                        Object.keys(errors).forEach((key) => {
+                            flattenedErrors[key] = Array.isArray(errors[key])
+                                ? errors[key][0]
+                                : errors[key];
+                        });
+                    }
+
+                    setErrors(flattenedErrors);
+                    addToast({
+                        title: "Error",
+                        description:
+                            flattenedErrors.message ||
+                            "Please check the form for errors",
+                        color: "danger",
                     });
                 },
                 onFinish: () => {
@@ -96,11 +116,11 @@ export default function RegisterForm() {
                 },
             });
         } catch (error) {
-            Swal.fire({
-                title: "Error!",
-                text: "An unexpected error occurred. Please try again.",
-                icon: "error",
-                confirmButtonText: "OK",
+            console.error(error);
+            addToast({
+                title: "Error",
+                description: error.message || "An unexpected error occurred",
+                color: "danger",
             });
             setIsProcessing(false);
         }
@@ -117,9 +137,38 @@ export default function RegisterForm() {
         setIsPrivacyModalOpen(true);
     };
 
-    const handleAgree = () => {
+    const handleCancelPrivacy = () => {
         setIsPrivacyModalOpen(false);
-        setIsRegisterModalOpen(true);
+        // Reset all form values to initial state
+        setValues({
+            name: "",
+            email: "",
+            phone: "",
+            company: "",
+            address: "",
+            id_type: "",
+            id_number: "",
+            is_agreed: false,
+        });
+        // Clear any errors
+        setErrors({});
+    };
+
+    const handleCancelRegister = () => {
+        setIsRegisterModalOpen(false);
+        // Reset all form values to initial state
+        setValues({
+            name: "",
+            email: "",
+            phone: "",
+            company: "",
+            address: "",
+            id_type: "",
+            id_number: "",
+            is_agreed: false,
+        });
+        // Clear any errors
+        setErrors({});
     };
 
     return (
@@ -133,20 +182,52 @@ export default function RegisterForm() {
                 Register
             </Button>
 
+            <Modal
+                isOpen={!isOnline}
+                hideCloseButton
+                placement="center"
+                backdrop="blur"
+                isDismissable={false}
+            >
+                <ModalContent>
+                    <ModalBody className="p-6 text-center">
+                        <div className="flex flex-col items-center justify-center gap-4">
+                            <MdWifiOff className="text-red-500 text-5xl" />
+                            <h2 className="text-xl font-bold text-red-600">
+                                Offline Mode
+                            </h2>
+                            <p className="text-sm text-gray-600">
+                                You are currently offline. Some features may be
+                                unavailable. Please reconnect to continue.
+                            </p>
+                        </div>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+
             {/* Privacy Modal */}
             <PrivacyModal
                 isOpen={isPrivacyModalOpen}
-                onOpenChange={setIsPrivacyModalOpen}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) {
+                        setValues((prev) => ({ ...prev, is_agreed: false }));
+                    }
+                    setIsPrivacyModalOpen(isOpen);
+                }}
                 isChecked={values.is_agreed}
                 onCheckboxChange={handleCheckboxChange}
-                onAgree={handleAgree}
+                onAgree={() => {
+                    setIsPrivacyModalOpen(false);
+                    setIsRegisterModalOpen(true);
+                }}
+                onCancel={handleCancelPrivacy}
             />
 
             {/* Registration Modal */}
             <Modal
                 isOpen={isRegisterModalOpen}
                 onOpenChange={() => setIsRegisterModalOpen(false)}
-                size="xl"
+                size="2xl"
                 scrollBehavior="outside"
                 isDismissable={false}
                 isKeyboardDismissDisabled
@@ -328,15 +409,13 @@ export default function RegisterForm() {
                                     }
                                 >
                                     {isProcessing
-                                        ? "Registering..."
+                                        ? "Please wait..."
                                         : "Register"}
                                 </Button>
                                 <Button
                                     color="danger"
                                     variant="flat"
-                                    onPress={() =>
-                                        setIsRegisterModalOpen(false)
-                                    }
+                                    onPress={handleCancelRegister}
                                     isDisabled={isProcessing}
                                 >
                                     Cancel

@@ -13,11 +13,81 @@ import axios from "axios";
 const REMINDER_DELAY_MINUTES = 30; // snooze length
 const POLL_INTERVAL_MINUTES = 1; // how often we poll the server
 const REMINDER_KEY = "lastDismissedReminderAt";
+const INACTIVITY_TIMEOUT_SECONDS = 90; // Auto-close after 60 seconds inactivity
+const REOPEN_DELAY_SECONDS = 60; // Show again after 60 seconds
 
 export default function AlertReminderModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentReminder, setCurrentReminder] = useState(null);
+    const [countdown, setCountdown] = useState(INACTIVITY_TIMEOUT_SECONDS);
     const timeoutRef = useRef(null);
+    const inactivityTimeoutRef = useRef(null);
+    const countdownIntervalRef = useRef(null);
+
+    const resetInactivityTimer = useCallback(() => {
+        // Reset countdown
+        setCountdown(INACTIVITY_TIMEOUT_SECONDS);
+
+        // Clear existing timeout
+        clearTimeout(inactivityTimeoutRef.current);
+        clearInterval(countdownIntervalRef.current);
+
+        if (isOpen) {
+            // Start countdown timer
+            countdownIntervalRef.current = setInterval(() => {
+                setCountdown((prev) => {
+                    if (prev <= 1) {
+                        clearInterval(countdownIntervalRef.current);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+
+            // Set timeout to close modal
+            inactivityTimeoutRef.current = setTimeout(() => {
+                handleAutoClose();
+            }, INACTIVITY_TIMEOUT_SECONDS * 1000);
+        }
+    }, [isOpen]);
+
+    const handleAutoClose = () => {
+        setIsOpen(false);
+        clearInterval(countdownIntervalRef.current);
+
+        // Show again after delay
+        timeoutRef.current = setTimeout(
+            fetchOverdueGuests,
+            REOPEN_DELAY_SECONDS * 1000
+        );
+    };
+
+    useEffect(() => {
+        if (isOpen) {
+            const events = [
+                "mousedown",
+                "mousemove",
+                "keypress",
+                "scroll",
+                "touchstart",
+            ];
+            events.forEach((event) => {
+                window.addEventListener(event, resetInactivityTimer);
+            });
+
+            resetInactivityTimer();
+
+            return () => {
+                events.forEach((event) => {
+                    window.removeEventListener(event, resetInactivityTimer);
+                });
+                clearTimeout(inactivityTimeoutRef.current);
+                clearInterval(countdownIntervalRef.current);
+            };
+        } else {
+            clearInterval(countdownIntervalRef.current);
+        }
+    }, [isOpen, resetInactivityTimer]);
 
     const delayExpired = () => {
         const last = localStorage.getItem(REMINDER_KEY);
@@ -28,20 +98,18 @@ export default function AlertReminderModal() {
     };
 
     const fetchOverdueGuests = useCallback(async () => {
-        if (!delayExpired()) return; // still snoozing
+        if (!delayExpired()) return;
 
         try {
             const { data } = await axios.get("/overdue-guests", {
-                params: { threshold: 1 },
+                params: { threshold: 30 },
             });
 
             if (!data.length) {
-                // nothing overdue
                 setIsOpen(false);
                 return;
             }
 
-            // pick the guest who has waited the longest
             const mostOverdue = data.reduce((p, c) =>
                 new Date(p.check_in_time) < new Date(c.check_in_time) ? p : c
             );
@@ -62,9 +130,8 @@ export default function AlertReminderModal() {
         }
     }, []);
 
-    /* ---------- poll the server every minute ---------- */
     useEffect(() => {
-        fetchOverdueGuests(); // initial check
+        fetchOverdueGuests();
         const pollId = setInterval(
             fetchOverdueGuests,
             POLL_INTERVAL_MINUTES * 60_000
@@ -72,12 +139,12 @@ export default function AlertReminderModal() {
         return () => clearInterval(pollId);
     }, [fetchOverdueGuests]);
 
-    /* ---------- snooze / close ---------- */
     const handleClose = () => {
         setIsOpen(false);
         localStorage.setItem(REMINDER_KEY, Date.now().toString());
+        clearTimeout(inactivityTimeoutRef.current);
+        clearInterval(countdownIntervalRef.current);
 
-        // schedule one fetch right when the snooze ends
         clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(
             fetchOverdueGuests,
@@ -85,12 +152,12 @@ export default function AlertReminderModal() {
         );
     };
 
-    /* ---------- checkout ---------- */
     const handleCheckOut = () => {
+        resetInactivityTimer();
         if (!currentReminder?.logId) return;
 
         router.post(
-            route("guest.log.checkout", currentReminder.logId),
+            route("guest.checkout", currentReminder.logId),
             {},
             {
                 onSuccess: () => {
@@ -100,15 +167,27 @@ export default function AlertReminderModal() {
                         color: "success",
                     });
                     setIsOpen(false);
-                    localStorage.removeItem(REMINDER_KEY); // reset snooze for next guest
+                    localStorage.removeItem(REMINDER_KEY);
+                    clearTimeout(inactivityTimeoutRef.current);
+                    clearInterval(countdownIntervalRef.current);
                 },
-                onError: () =>
+                onError: (errors) => {
+                    resetInactivityTimer();
+                    let errorMessage =
+                        "An unexpected error occurred during checkout";
+                    if (errors?.errors)
+                        errorMessage = Object.values(errors.errors)[0][0];
+                    else if (errors?.response?.data?.message)
+                        errorMessage = errors.response.data.message;
+                    else if (errors?.message) errorMessage = errors.message;
+                    else if (typeof errors === "string") errorMessage = errors;
+
                     addToast({
                         title: "Checkout Failed",
-                        description:
-                            "An error occurred while checking out the guest.",
+                        description: errorMessage,
                         color: "danger",
-                    }),
+                    });
+                },
             }
         );
     };
@@ -116,11 +195,11 @@ export default function AlertReminderModal() {
     return (
         <Modal
             isOpen={isOpen}
-            onClose={
-                handleClose
-            }
+            onClose={handleClose}
             placement="center"
             backdrop="blur"
+            size="xl"
+            isDismissable={false}
         >
             <ModalContent>
                 <ModalBody className="p-6">
@@ -147,6 +226,10 @@ export default function AlertReminderModal() {
                                 </p>
                             </>
                         )}
+
+                        <div className="mt-4 text-sm text-gray-500">
+                            Auto-closing in {countdown} seconds...
+                        </div>
 
                         <div className="mt-6 flex justify-center gap-3">
                             <Button color="primary" onPress={handleCheckOut}>
