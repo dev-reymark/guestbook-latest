@@ -280,14 +280,14 @@ const GuestReport = ({ auth }) => {
                                 <Button
                                     color="primary"
                                     variant="shadow"
-                                    onClick={generatePDFReportAllLogs}
+                                    onPress={generatePDFReportAllLogs}
                                 >
                                     Export All
                                 </Button>
                                 <div className="flex justify-end gap-2">
                                     <Button
                                         color="secondary"
-                                        onClick={generatePDFReportCustomRange}
+                                        onPress={generatePDFReportCustomRange}
                                     >
                                         Export Custom Date
                                     </Button>

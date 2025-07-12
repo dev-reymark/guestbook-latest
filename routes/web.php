@@ -10,6 +10,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UploadController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DatabaseBackupController;
 
 Route::get('/', function () {
     return Inertia::render('Home', [
@@ -48,6 +49,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [UploadController::class, 'upload'])->name('media.upload');
         Route::get('/', [UploadController::class, 'create'])->name('media.create');
         Route::delete('/{id}', [UploadController::class, 'destroy']);
+    });
+
+    Route::prefix('backups')->group(function () {
+        Route::get('/', [DatabaseBackupController::class, 'index'])->name('backups.index');
+        Route::post('/', [DatabaseBackupController::class, 'store'])->name('backups.store');
+        Route::get('/download/{filename}', [DatabaseBackupController::class, 'download'])->name('backups.download');
+        Route::delete('/{filename}', [DatabaseBackupController::class, 'destroy'])->name('backups.destroy');
     });
 });
 

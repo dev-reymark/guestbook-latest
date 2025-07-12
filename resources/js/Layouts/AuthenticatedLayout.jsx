@@ -95,7 +95,7 @@ export default function Authenticated({ user, header, children }) {
                                         >
                                             Profile
                                         </DropdownItem>
-                                        <DropdownItem onClick={handleLogout}>
+                                        <DropdownItem onClick={handleLogout} className="text-rose-500">
                                             Log Out
                                         </DropdownItem>
                                     </DropdownMenu>
@@ -203,6 +203,7 @@ export default function Authenticated({ user, header, children }) {
                                 method="post"
                                 href={route("logout")}
                                 as="button"
+                                className="text-rose-500"
                             >
                                 Log Out
                             </ResponsiveNavLink>

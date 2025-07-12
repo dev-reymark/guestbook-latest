@@ -11,12 +11,10 @@ export default function Dashboard({
     guestLogsLastWeek,
     guestLogsPercentChange,
 }) {
-    // Format large numbers for better readability
     const formatNumber = (num) => {
         return new Intl.NumberFormat().format(num);
     };
 
-    // Determine trend indicator (up/down) and color
     const getTrendIndicator = (percentChange) => {
         const isPositive = percentChange >= 0;
         return {
@@ -68,22 +66,16 @@ export default function Dashboard({
             }
         >
             <Head title="Dashboard" />
-
-            <div className="py-6 px-4 sm:px-6 lg:px-8">
-                <div className="max-w-7xl mx-auto">
-                    {/* Welcome message */}
+            <div className="py-8 px-4">
+                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="mb-8">
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                             Welcome back, {auth.user.name}!
                         </h1>
-                        <p className="mt-1 text-gray-600 dark:text-gray-400">
-                            Here&apos;s an overview of your dashboard.
-                        </p>
+                        
                     </div>
 
-                    {/* Stats cards grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Registered Guests Card */}
                         <Card
                             as={Link}
                             isPressable
@@ -139,7 +131,6 @@ export default function Dashboard({
                             </div>
                         </Card>
 
-                        {/* Guest Logs Card */}
                         <Card
                             as={Link}
                             isPressable
@@ -197,7 +188,6 @@ export default function Dashboard({
                         </Card>
                     </div>
 
-                    {/* Additional content area for future expansion */}
                     <div className="mt-8 bg-white dark:bg-neutral-800 rounded-xl border border-gray-100 dark:border-neutral-700 p-6">
                         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
                             Quick Actions
