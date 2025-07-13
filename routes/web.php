@@ -30,14 +30,25 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/guests', [GuestController::class, 'index'])->name('guests.index');
-    Route::get('/generate-report', [GuestController::class, 'generateReport'])->name('guest.generateReport');
+    Route::prefix('guests')->group(function () {
+        // Display all guests
+        Route::get('/', [GuestController::class, 'index'])->name('guests.index');
+        // Update guest
+        Route::put('/{id}', [GuestController::class, 'update'])->name('guest.update');
+        // Delete guest
+        Route::delete('/{id}', [GuestController::class, 'destroy'])->name('guest.destroy');
+        // Generate PDF report
+        Route::get('/generate-report', [GuestController::class, 'generateReport'])->name('guests.generateReport');
+    });
 
-    Route::get('/guestlogs', [GuestLogController::class, 'index'])->name('guestlogs.index');
-    Route::delete('/guests/logs/{guestId}', [GuestLogController::class, 'destroy'])->name('guest.log.destroy');
-    Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
-    Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
-    Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
+    Route::prefix('guestlogs')->group(function () {
+        Route::get('/', [GuestLogController::class, 'index'])->name('guestlogs.index');
+        Route::put('/{logId}', [GuestLogController::class, 'update'])->name('guestlog.update');
+        Route::delete('/{logId}', [GuestLogController::class, 'destroy'])->name('guestlog.destroy');
+        Route::get('/generate-report-guestlog', [GuestLogController::class, 'generateReport'])->name('guestlog.generateReport');
+        Route::get('/generate-report-all-guestlogs', [GuestLogController::class, 'generateReportAllLogs']);
+        Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
+    });
 
 
     Route::get('/reports', [ReportController::class, 'create'])->name('reports.create');

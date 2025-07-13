@@ -1,6 +1,10 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link } from "@inertiajs/react";
 import { Card } from "@heroui/react";
+import { LuDatabaseBackup } from "react-icons/lu";
+import { VscSignOut } from "react-icons/vsc";
+import { HiOutlineDocumentReport } from "react-icons/hi";
+import { Inertia } from "@inertiajs/inertia";
 
 export default function Dashboard({
     auth,
@@ -13,6 +17,10 @@ export default function Dashboard({
 }) {
     const formatNumber = (num) => {
         return new Intl.NumberFormat().format(num);
+    };
+
+    const handleLogout = () => {
+        Inertia.post(route("logout"));
     };
 
     const getTrendIndicator = (percentChange) => {
@@ -72,7 +80,6 @@ export default function Dashboard({
                         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                             Welcome back, {auth.user.name}!
                         </h1>
-                        
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -144,7 +151,7 @@ export default function Dashboard({
                                     </h3>
                                     <span className="p-2 rounded-lg bg-green-100 dark:bg-green-900/50">
                                         <svg
-                                            className="w-6 h-6 text-green-600 dark:text-green-400"
+                                            className="w-6 h-6 text-green-600"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -153,7 +160,7 @@ export default function Dashboard({
                                                 strokeLinecap="round"
                                                 strokeLinejoin="round"
                                                 strokeWidth={2}
-                                                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                                             />
                                         </svg>
                                     </span>
@@ -194,72 +201,45 @@ export default function Dashboard({
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <Link
-                                href={route("guests.index")}
+                                href={route("backups.index")}
                                 className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <svg
-                                        className="w-5 h-5 text-primary-600 dark:text-primary-400 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                                        />
-                                    </svg>
+                                    <LuDatabaseBackup
+                                        size={20}
+                                        className="text-primary-600 mr-3"
+                                    />
                                     <span className="font-medium">
-                                        View Registered Guest
+                                        Backup Database
                                     </span>
                                 </div>
                             </Link>
-                            <Link
-                                href={route("guestlogs.index")}
-                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <svg
-                                        className="w-5 h-5 text-green-600 dark:text-green-400 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        />
-                                    </svg>
-                                    <span className="font-medium">
-                                        View Guest Logs
-                                    </span>
-                                </div>
-                            </Link>
+
                             <Link
                                 href={route("reports.create")}
                                 className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <svg
-                                        className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth={2}
-                                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                                        />
-                                    </svg>
+                                    <HiOutlineDocumentReport
+                                        size={20}
+                                        className="text-success-600 mr-3"
+                                    />
                                     <span className="font-medium">
                                         View Reports
                                     </span>
+                                </div>
+                            </Link>
+                            <Link
+                                as="button"
+                                onClick={handleLogout}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <VscSignOut
+                                        size={20}
+                                        className="text-red-600 mr-3"
+                                    />
+                                    <span className="font-medium">Logout</span>
                                 </div>
                             </Link>
                         </div>

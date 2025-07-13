@@ -64,6 +64,33 @@ class GuestController extends Controller
         ]);
     }
 
+    public function update(Request $request, $id)
+    {
+        $guest = Guest::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255|unique:guests,name,' . $guest->id,
+            'id_type' => 'nullable|string|max:255',
+            'id_number' => 'nullable|string|max:255',
+            'email' => 'nullable|email|unique:guests,email,' . $guest->id,
+            'phone' => 'nullable|string|max:20|unique:guests,phone,' . $guest->id,
+            'company' => 'required|string|max:255',
+            'address' => 'nullable|string|max:255',
+        ]);
+
+        $guest->update($validated);
+
+        return redirect()->back()->with('success', 'Guest updated successfully');
+    }
+
+    public function destroy($id)
+    {
+        $guest = Guest::findOrFail($id);
+        $guest->delete();
+
+        return redirect()->back()->with('success', 'Guest deleted successfully');
+    }
+
     public function generateReport()
     {
         $guests = Guest::all();

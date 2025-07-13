@@ -11,7 +11,7 @@ import {
     Divider,
 } from "@heroui/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import {
     Chart,
     LinearScale,
@@ -23,6 +23,7 @@ import {
     Tooltip,
 } from "chart.js";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
+import { TbFileExport } from "react-icons/tb";
 
 Chart.register(
     LinearScale,
@@ -149,7 +150,9 @@ const GuestReport = ({ auth }) => {
 
     const fetchGuestVisitsData = async () => {
         try {
-            const response = await axios.get("/guest-visits-per-month");
+            const response = await axios.get(
+                "/guestlogs/guest-visits-per-month"
+            );
             console.log(
                 "Response from /guest-visits-per-month:",
                 response.data
@@ -202,10 +205,7 @@ const GuestReport = ({ auth }) => {
         return labels;
     };
 
-    const fillMissingData = (
-        existingLabels,
-        existingData
-    ) => {
+    const fillMissingData = (existingLabels, existingData) => {
         const allMonthsLabels = generateAllMonthsLabels();
         const filledData = [];
         allMonthsLabels.forEach((month, index) => {
@@ -274,35 +274,57 @@ const GuestReport = ({ auth }) => {
 
             <div className="py-8 px-4">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <Card className="w-full">
-                        <CardHeader className="flex gap-3">
-                            <div className="flex justify-between gap-3">
-                                <Button
-                                    color="primary"
-                                    variant="shadow"
-                                    onPress={generatePDFReportAllLogs}
-                                >
-                                    Export All
-                                </Button>
-                                <div className="flex justify-end gap-2">
-                                    <Button
-                                        color="secondary"
-                                        onPress={generatePDFReportCustomRange}
-                                    >
-                                        Export Custom Date
-                                    </Button>
-
-                                    <DateRangePicker
-                                        label="Select Date Range"
-                                        size="sm"
-                                        value={dateRange}
-                                        onChange={setDateRange}
-                                        className="w-50"
-                                        visibleMonths={2}
-                                        pageBehavior="single"
+                    <div className="mb-8 bg-white rounded-xl border border-gray-100 p-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            Quick Actions
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Link
+                                // href={route("backups.index")}
+                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <TbFileExport
+                                        size={24}
+                                        className="text-success-600 mr-3"
                                     />
+                                    <span className="font-medium">
+                                        Export Excel/CSV/PD
+                                    </span>
                                 </div>
-                            </div>
+
+                                <DateRangePicker
+                                    label="Select Date Range"
+                                    size="sm"
+                                    value={dateRange}
+                                    onChange={setDateRange}
+                                    className="w-50"
+                                    visibleMonths={2}
+                                    pageBehavior="single"
+                                />
+                            </Link>
+
+                            <Link
+                                // href={route("backups.index")}
+                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <TbFileExport
+                                        size={24}
+                                        className="text-success-600 mr-3"
+                                    />
+                                    <span className="font-medium">
+                                        Custom Date
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                    <Card className="w-full">
+                        <CardHeader>
+                            <h3 className="text-lg font-medium text-gray-900">
+                                Guest Visits Per Month
+                            </h3>
                         </CardHeader>
                         <Divider />
                         <CardBody>

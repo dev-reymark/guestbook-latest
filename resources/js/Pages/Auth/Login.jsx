@@ -19,7 +19,7 @@ export default function Login({ status }) {
             onSuccess: () => {
                 addToast({
                     title: "Login Successful",
-                    description: "You have been logged in successfully",
+                    description: "You have been logged in!",
                     type: "success",
                     color: "success",
                     duration: 5000, // 5 seconds

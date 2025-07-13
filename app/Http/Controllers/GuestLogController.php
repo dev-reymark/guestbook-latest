@@ -160,6 +160,69 @@ class GuestLogController extends Controller
         ]);
     }
 
+    public function update(Request $request, $logId)
+    {
+        try {
+            $validated = $request->validate([
+                'meeting_with' => 'nullable|string|max:255',
+                'purpose_of_visit' => 'required|string|max:255',
+                'check_in_time' => 'required|date',
+                'check_out_time' => 'nullable|date|after_or_equal:check_in_time',
+            ]);
+
+            $guestLog = GuestLog::findOrFail($logId);
+
+            $guestLog->update([
+                'meeting_with' => $validated['meeting_with'],
+                'purpose_of_visit' => $validated['purpose_of_visit'],
+                'check_in_time' => Carbon::parse($validated['check_in_time']),
+                'check_out_time' => $validated['check_out_time']
+                    ? Carbon::parse($validated['check_out_time'])
+                    : null,
+            ]);
+
+            Log::info('Guest log updated successfully', [
+                'log_id' => $logId,
+                'guest_id' => $guestLog->guest_id,
+            ]);
+
+            return redirect()->back()->with('success', 'Guest log updated successfully');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::warning('Guest log update validation failed', [
+                'log_id' => $logId,
+                'errors' => $e->errors(),
+            ]);
+            throw $e;
+        } catch (\Exception $e) {
+            Log::error('Guest log update failed', [
+                'log_id' => $logId,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to update guest log');
+        }
+    }
+
+    public function destroy($logId)
+    {
+        try {
+            $guestLog = GuestLog::findOrFail($logId);
+            $guestLog->delete();
+
+            Log::info('Guest log deleted successfully', [
+                'log_id' => $logId,
+                'guest_id' => $guestLog->guest_id,
+            ]);
+
+            return redirect()->back()->with('success', 'Guest log deleted successfully');
+        } catch (\Exception $e) {
+            Log::error('Guest log deletion failed', [
+                'log_id' => $logId,
+                'error' => $e->getMessage(),
+            ]);
+            return back()->with('error', 'Failed to delete guest log');
+        }
+    }
+
     public function generateReport(Request $request)
     {
         $request->validate([

@@ -36,8 +36,17 @@ export default function Index({ auth }) {
         guest.name.toLowerCase().includes(filterValue.toLowerCase())
     );
     const [isModalOpen, setIsModalOpen] = React.useState(false);
-    const [selectedGuestDetails, setSelectedGuestDetails] =
-        React.useState(null);
+    const [selectedGuest, setSelectedGuest] = React.useState(null);
+    const [formData, setFormData] = React.useState({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        id_type: "",
+        id_number: "",
+        address: "",
+    });
+
     const handleDelete = (guestId) => {
         Swal.fire({
             title: "Are you sure?",
@@ -56,7 +65,6 @@ export default function Index({ auth }) {
                             "The guest has been deleted.",
                             "success"
                         );
-                        Inertia.reload();
                     },
                     onError: () => {
                         Swal.fire(
@@ -108,12 +116,50 @@ export default function Index({ auth }) {
     };
 
     const openModal = (guest) => {
-        setSelectedGuestDetails(guest);
+        setSelectedGuest(guest);
+        setFormData({
+            name: guest.name,
+            email: guest.email || "",
+            phone: guest.phone || "",
+            company: guest.company || "",
+            id_type: guest.id_type || "",
+            id_number: guest.id_number || "",
+            address: guest.address || "",
+        });
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleUpdate = () => {
+        Inertia.put(route("guest.update", { id: selectedGuest.id }), formData, {
+            onSuccess: () => {
+                Swal.fire(
+                    "Updated!",
+                    "The guest has been updated successfully.",
+                    "success"
+                );
+                closeModal();
+                Inertia.reload();
+            },
+            onError: (errors) => {
+                Swal.fire(
+                    "Error!",
+                    "An error occurred while updating the guest.",
+                    "error"
+                );
+            },
+        });
     };
 
     const [page, setPage] = React.useState(1);
@@ -208,46 +254,48 @@ export default function Index({ auth }) {
                             emptyContent={"No guests found"}
                             items={items}
                         >
-                            {items.map(
-                                (
-                                    guest,
-                                    index /* Change filteredGuests to items */
-                                ) => (
-                                    <TableRow key={guest.id}>
-                                        <TableCell className="text-success">
-                                            {(page - 1) * rowsPerPage +
-                                                index +
-                                                1}
-                                        </TableCell>
-                                        <TableCell>{guest.name}</TableCell>
-                                        <TableCell>
-                                            {guest.email || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {guest.phone || "--"}
-                                        </TableCell>
-                                        <TableCell>{guest.company}</TableCell>
-                                        <TableCell>
-                                            {guest.id_type || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {guest.id_number || "--"}
-                                        </TableCell>
-                                        <TableCell>
-                                            {guest.address || "--"}
-                                        </TableCell>
-                                        <TableCell>
+                            {items.map((guest, index) => (
+                                <TableRow key={guest.id}>
+                                    <TableCell className="text-success">
+                                        {(page - 1) * rowsPerPage + index + 1}
+                                    </TableCell>
+                                    <TableCell>{guest.name}</TableCell>
+                                    <TableCell>{guest.email || "--"}</TableCell>
+                                    <TableCell>{guest.phone || "--"}</TableCell>
+                                    <TableCell>{guest.company}</TableCell>
+                                    <TableCell>
+                                        {guest.id_type || "--"}
+                                    </TableCell>
+                                    <TableCell>
+                                        {guest.id_number || "--"}
+                                    </TableCell>
+                                    <TableCell>
+                                        {guest.address || "--"}
+                                    </TableCell>
+                                    <TableCell>
+                                        <div className="flex gap-2">
                                             <Button
                                                 color="secondary"
                                                 variant="flat"
+                                                size="sm"
                                                 onPress={() => openModal(guest)}
                                             >
-                                                View
+                                                Edit
                                             </Button>
-                                        </TableCell>
-                                    </TableRow>
-                                )
-                            )}
+                                            <Button
+                                                color="danger"
+                                                variant="flat"
+                                                size="sm"
+                                                onPress={() =>
+                                                    handleDelete(guest.id)
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </div>
@@ -258,59 +306,78 @@ export default function Index({ auth }) {
                 isOpen={isModalOpen}
                 onOpenChange={closeModal}
                 hideCloseButton
+                size="xl"
                 backdrop="blur"
             >
                 <ModalContent>
                     {() => (
                         <>
-                            <ModalHeader className="flex flex-col gap-1">
-                                Guest Details
+                            <ModalHeader className="flex gap-1">
+                                Edit Guest
                             </ModalHeader>
                             <ModalBody>
-                                {selectedGuestDetails && (
-                                    <div className="flex flex-col gap-2">
-                                        <Input
-                                            label="Name"
-                                            variant="bordered"
-                                            value={selectedGuestDetails.name}
-                                        />
-                                        <Input
-                                            label="Email"
-                                            variant="bordered"
-                                            value={selectedGuestDetails.email}
-                                        />
-                                        <Input
-                                            label="Phone"
-                                            variant="bordered"
-                                            value={
-                                                selectedGuestDetails.phone ??
-                                                undefined
-                                            }
-                                        />
-
-                                        <Input
-                                            label="Company"
-                                            variant="bordered"
-                                            value={
-                                                selectedGuestDetails.company ??
-                                                undefined
-                                            }
-                                        />
-
-                                        <Input
-                                            label="Address"
-                                            variant="bordered"
-                                            value={
-                                                selectedGuestDetails.address ??
-                                                undefined
-                                            }
-                                        />
-                                    </div>
-                                )}
+                                <div className="flex flex-col gap-4">
+                                    <Input
+                                        label="Name"
+                                        name="name"
+                                        variant="bordered"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="Email"
+                                        name="email"
+                                        variant="bordered"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="Phone"
+                                        name="phone"
+                                        variant="bordered"
+                                        value={formData.phone}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="Company"
+                                        name="company"
+                                        variant="bordered"
+                                        value={formData.company}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="ID Type"
+                                        name="id_type"
+                                        variant="bordered"
+                                        value={formData.id_type}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="ID Number"
+                                        name="id_number"
+                                        variant="bordered"
+                                        value={formData.id_number}
+                                        onChange={handleInputChange}
+                                    />
+                                    <Input
+                                        label="Address"
+                                        name="address"
+                                        variant="bordered"
+                                        value={formData.address}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="primary" onPress={closeModal}>
-                                    Close
+                                <Button
+                                    color="danger"
+                                    variant="light"
+                                    onPress={closeModal}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button color="primary" onPress={handleUpdate}>
+                                    Update
                                 </Button>
                             </ModalFooter>
                         </>

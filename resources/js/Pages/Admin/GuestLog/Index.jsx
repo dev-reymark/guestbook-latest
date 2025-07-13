@@ -1,6 +1,5 @@
-import { useState } from "react";
-import React from "react";
-import { Head } from "@inertiajs/react";
+import { useState, useMemo } from "react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     Input,
     Table,
@@ -12,19 +11,33 @@ import {
     Tooltip,
     DateRangePicker,
     Pagination,
-    getKeyValue,
+    Button,
+    Modal,
+    ModalContent,
+    ModalHeader,
+    ModalBody,
+    ModalFooter,
 } from "@heroui/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { DeleteIcon, SearchIcon } from "@/Components/Icons";
+import { DeleteIcon, SearchIcon, EditIcon } from "@/Components/Icons";
 import Swal from "sweetalert2";
 import { Inertia } from "@inertiajs/inertia";
 import { formatLocalDateTime } from "@/utils/date";
 
 export default function Index({ auth, guestLogs }) {
+    const { props } = usePage();
     const [searchTerm, setSearchTerm] = useState("");
     const [dateRange, setDateRange] = useState({ start: null, end: null });
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedLog, setSelectedLog] = useState(null);
+    const [formData, setFormData] = useState({
+        meeting_with: "",
+        purpose_of_visit: "",
+        check_in_time: "",
+        check_out_time: "",
+    });
 
-    const handleDelete = (guestId) => {
+    const handleDelete = (logId) => {
         Swal.fire({
             title: "Are you sure?",
             text: "This action cannot be undone!",
@@ -35,26 +48,63 @@ export default function Index({ auth, guestLogs }) {
             confirmButtonText: "Yes, delete it!",
         }).then((result) => {
             if (result.isConfirmed) {
-                Inertia.delete(route("guest.log.destroy", { guestId }), {
+                Inertia.delete(route("guestlog.destroy", { logId }), {
                     onSuccess: () => {
                         Swal.fire(
                             "Deleted!",
-                            "The guest has been deleted.",
+                            "The log has been deleted.",
                             "success"
                         );
-                        // Reload the page to reflect changes
-                        Inertia.reload();
                     },
                     onError: () => {
-                        Swal.fire(
-                            "Error!",
-                            "An error occurred while deleting the guest.",
-                            "error"
-                        );
+                        Swal.fire("Error!", "Failed to delete log.", "error");
                     },
                 });
             }
         });
+    };
+
+    const openEditModal = (log) => {
+        setSelectedLog(log);
+        setFormData({
+            meeting_with: log.meeting_with || "",
+            purpose_of_visit: log.purpose_of_visit,
+            check_in_time: log.check_in_time,
+            check_out_time: log.check_out_time || "",
+        });
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = () => {
+        Inertia.put(
+            route("guestlog.update", { logId: selectedLog.id }),
+            formData,
+            {
+                onSuccess: () => {
+                    Swal.fire(
+                        "Updated!",
+                        "The log has been updated.",
+                        "success"
+                    );
+                    closeModal();
+                },
+                onError: (errors) => {
+                    Swal.fire("Error!", "Failed to update log.", "error");
+                },
+            }
+        );
     };
 
     const filterLogs = (guestLog) => {
@@ -72,15 +122,14 @@ export default function Index({ auth, guestLogs }) {
 
     const filteredGuestLogs = guestLogs.filter(filterLogs);
 
-    const [page, setPage] = React.useState(1);
+    const [page, setPage] = useState(1);
     const rowsPerPage = 15;
 
     const pages = Math.ceil(filteredGuestLogs.length / rowsPerPage);
 
-    const items = React.useMemo(() => {
+    const items = useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-
         return filteredGuestLogs.slice(start, end);
     }, [page, rowsPerPage, filteredGuestLogs]);
 
@@ -135,8 +184,6 @@ export default function Index({ auth, guestLogs }) {
                                         {filteredGuestLogs.length}
                                     </p>
                                     <DateRangePicker
-                                        label="Filter by Date"
-                                        labelPlacement="top"
                                         className="max-w-xs"
                                         variant="bordered"
                                         visibleMonths={2}
@@ -157,6 +204,7 @@ export default function Index({ auth, guestLogs }) {
                                 <TableColumn>Purpose of Visit</TableColumn>
                                 <TableColumn>Check In</TableColumn>
                                 <TableColumn>Check Out</TableColumn>
+                                <TableColumn>Actions</TableColumn>
                             </TableHeader>
                             <TableBody
                                 emptyContent={"No guests found."}
@@ -191,6 +239,38 @@ export default function Index({ auth, guestLogs }) {
                                                 guestLog.check_out_time
                                             ) || "--"}
                                         </TableCell>
+                                        <TableCell>
+                                            <div className="flex gap-1">
+                                                <Tooltip content="Edit">
+                                                    <Button
+                                                        isIconOnly
+                                                        size="sm"
+                                                        variant="light"
+                                                        onPress={() =>
+                                                            openEditModal(
+                                                                guestLog
+                                                            )
+                                                        }
+                                                    >
+                                                        <EditIcon className="text-lg text-default-400" />
+                                                    </Button>
+                                                </Tooltip>
+                                                <Tooltip content="Delete">
+                                                    <Button
+                                                        isIconOnly
+                                                        size="sm"
+                                                        variant="light"
+                                                        onPress={() =>
+                                                            handleDelete(
+                                                                guestLog.id
+                                                            )
+                                                        }
+                                                    >
+                                                        <DeleteIcon className="text-lg text-danger" />
+                                                    </Button>
+                                                </Tooltip>
+                                            </div>
+                                        </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -198,6 +278,64 @@ export default function Index({ auth, guestLogs }) {
                     </div>
                 </div>
             </div>
+
+            {/* Edit Modal */}
+            <Modal
+                isDismissable={false}
+                size="xl"
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                hideCloseButton
+                placement="center"
+            >
+                <ModalContent>
+                    <ModalHeader>Edit Guest Log</ModalHeader>
+                    <ModalBody>
+                        <div className="space-y-4">
+                            <Input
+                                label="Meeting With"
+                                name="meeting_with"
+                                value={formData.meeting_with}
+                                onChange={handleInputChange}
+                            />
+                            <Input
+                                label="Purpose of Visit"
+                                name="purpose_of_visit"
+                                value={formData.purpose_of_visit}
+                                onChange={handleInputChange}
+                                required
+                            />
+                            <Input
+                                label="Check In Time"
+                                type="datetime-local"
+                                name="check_in_time"
+                                value={formData.check_in_time}
+                                onChange={handleInputChange}
+                                required
+                            />
+                            <Input
+                                label="Check Out Time"
+                                type="datetime-local"
+                                name="check_out_time"
+                                value={formData.check_out_time}
+                                onChange={handleInputChange}
+                            />
+                        </div>
+                    </ModalBody>
+                    <ModalFooter>
+                        <Button
+                            color="danger"
+                            variant="light"
+                            onPress={closeModal}
+                        >
+                            Cancel
+                        </Button>
+                        <Button color="primary" onPress={handleSubmit}>
+                            Save Changes
+                        </Button>
+                    </ModalFooter>
+                </ModalContent>
+            </Modal>
         </AuthenticatedLayout>
     );
 }

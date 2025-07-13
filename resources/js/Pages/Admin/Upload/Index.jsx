@@ -24,6 +24,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import axios from "axios";
 import { DeleteIcon } from "@/Components/Icons";
 import { useState, useEffect } from "react";
+import { TbDatabaseImport } from "react-icons/tb";
 
 export default function Index({ auth }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
@@ -102,20 +103,46 @@ export default function Index({ auth }) {
 
             <div className="py-8 px-4">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <Button
-                        as={Link}
-                        onPress={onOpen}
-                        color="primary"
-                        startContent={<FaPlus />}
+                    <div className="mb-8 bg-white rounded-xl border border-gray-100 p-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-4">
+                            Quick Actions
+                        </h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <Link
+                                // href={route("backups.index")}
+                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <TbDatabaseImport
+                                        size={24}
+                                        className="text-success-600 mr-3"
+                                    />
+                                    <span className="font-medium">
+                                        Import Excel/CSV
+                                    </span>
+                                </div>
+                            </Link>
+                        </div>
+                    </div>
+                    <Table
+                        topContent={
+                            <div>
+                                <Button
+                                    as={Link}
+                                    onPress={onOpen}
+                                    color="primary"
+                                >
+                                    Add Media
+                                </Button>
+                            </div>
+                        }
+                        aria-label="Media URL TABLE"
                     >
-                        Add Media
-                    </Button>
-                    <Spacer y={5} />
-
-                    <Table aria-label="Media URL TABLE">
                         <TableHeader>
                             <TableColumn>MEDIA URL</TableColumn>
-                            <TableColumn>{""}</TableColumn>
+                            <TableColumn>TYPE</TableColumn>
+                            <TableColumn>SIZE</TableColumn>
+                            <TableColumn>ACTION</TableColumn>
                         </TableHeader>
                         <TableBody emptyContent="No media found.">
                             {uploads.map((upload) => (
@@ -137,6 +164,10 @@ export default function Index({ auth }) {
                             ))}
                         </TableBody>
                     </Table>
+                    <p className="mt-1 ml-3 text-sm italic text-gray-600">
+                        The images and videos appear here will be display in the
+                        kiosk slider
+                    </p>
 
                     <Modal
                         isOpen={isOpen}
