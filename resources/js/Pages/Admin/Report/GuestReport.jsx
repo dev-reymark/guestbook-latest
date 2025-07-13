@@ -23,7 +23,9 @@ import {
     Tooltip,
 } from "chart.js";
 import { AiOutlineQuestionCircle } from "react-icons/ai";
-import { TbFileExport } from "react-icons/tb";
+import { TbDatabaseImport, TbFileExport } from "react-icons/tb";
+import ExportModal from "./ExportModal";
+import ImportModal from "./ImportModal";
 
 Chart.register(
     LinearScale,
@@ -36,111 +38,8 @@ Chart.register(
 );
 
 const GuestReport = ({ auth }) => {
-    const [dateRange, setDateRange] = useState({});
-
-    const generatePDFReportAllLogs = async () => {
-        try {
-            if (
-                !guestVisitsData ||
-                guestVisitsData.datasets[0].data.every((value) => value === 0)
-            ) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Records",
-                    text: "There are no guest logs available to export.",
-                });
-                return;
-            }
-
-            const response = await axios.get("/generate-report-all-guestlogs", {
-                responseType: "blob",
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "All_Guest_Logs_Report.pdf");
-            document.body.appendChild(link);
-            link.click();
-
-            Swal.fire({
-                icon: "success",
-                title: "PDF Report Generated",
-                text: "The PDF report for all logs has been successfully generated and downloaded.",
-            });
-        } catch (error) {
-            console.error("Error generating PDF report for all logs:", error);
-
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to generate PDF report for all logs. Please try again later.",
-            });
-        }
-    };
-
-    const generatePDFReportCustomRange = async () => {
-        if (!dateRange.start || !dateRange.end) {
-            Swal.fire({
-                icon: "warning",
-                title: "Warning",
-                text: "Please select date range.",
-            });
-            return;
-        }
-
-        try {
-            if (
-                !guestVisitsData ||
-                guestVisitsData.datasets[0].data.every((value) => value === 0)
-            ) {
-                Swal.fire({
-                    icon: "warning",
-                    title: "No Records",
-                    text: "There are no guest logs available for the selected date range.",
-                });
-                return;
-            }
-            const response = await axios.get("/generate-report-guestlog", {
-                responseType: "blob",
-                params: {
-                    start_date: dateRange.start,
-                    end_date: dateRange.end,
-                },
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute(
-                "download",
-                "Guest_logs_report_from_" +
-                    dateRange.start +
-                    "_to_" +
-                    dateRange.end +
-                    ".pdf"
-            );
-            document.body.appendChild(link);
-            link.click();
-
-            Swal.fire({
-                icon: "success",
-                title: "PDF Report Generated",
-                text: "The PDF report for the selected date range has been successfully generated and downloaded.",
-            });
-        } catch (error) {
-            console.error(
-                "Error generating PDF report for custom range:",
-                error
-            );
-
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to generate PDF report for the selected date range. Please try again later.",
-            });
-        }
-    };
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const [guestVisitsData, setGuestVisitsData] = useState(null);
 
@@ -279,45 +178,36 @@ const GuestReport = ({ auth }) => {
                             Quick Actions
                         </h3>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Link
-                                // href={route("backups.index")}
-                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            <a
+                                onClick={() => setShowImportModal(true)}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
                             >
                                 <div className="flex items-center">
-                                    <TbFileExport
-                                        size={24}
+                                    <TbDatabaseImport
+                                        size={20}
                                         className="text-success-600 mr-3"
                                     />
                                     <span className="font-medium">
-                                        Export Excel/CSV/PD
+                                        Import Data
                                     </span>
                                 </div>
+                            </a>
 
-                                <DateRangePicker
-                                    label="Select Date Range"
-                                    size="sm"
-                                    value={dateRange}
-                                    onChange={setDateRange}
-                                    className="w-50"
-                                    visibleMonths={2}
-                                    pageBehavior="single"
-                                />
-                            </Link>
-
-                            <Link
-                                // href={route("backups.index")}
-                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            <a
+                                as="button"
+                                onClick={() => setShowExportModal(true)}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
                             >
                                 <div className="flex items-center">
                                     <TbFileExport
-                                        size={24}
+                                        size={20}
                                         className="text-success-600 mr-3"
                                     />
                                     <span className="font-medium">
-                                        Custom Date
+                                        Export Data
                                     </span>
                                 </div>
-                            </Link>
+                            </a>
                         </div>
                     </div>
                     <Card className="w-full">
@@ -344,6 +234,15 @@ const GuestReport = ({ auth }) => {
                     </Card>
                 </div>
             </div>
+            <ExportModal
+                show={showExportModal}
+                onClose={() => setShowExportModal(false)}
+            />
+
+            <ImportModal
+                show={showImportModal}
+                onClose={() => setShowImportModal(false)}
+            />
         </AuthenticatedLayout>
     );
 };

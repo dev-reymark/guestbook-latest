@@ -90,13 +90,4 @@ class GuestController extends Controller
 
         return redirect()->back()->with('success', 'Guest deleted successfully');
     }
-
-    public function generateReport()
-    {
-        $guests = Guest::all();
-        $pdf = app('dompdf.wrapper')->loadView('guests', ['guests' => $guests]);
-
-
-        return $pdf->download('guests_report.pdf');
-    }
 }

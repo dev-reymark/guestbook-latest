@@ -78,43 +78,6 @@ export default function Index({ auth }) {
         });
     };
 
-    const handleExport = async () => {
-        if (filteredGuests.length === 0) {
-            Swal.fire({
-                icon: "warning",
-                title: "No Records",
-                text: "There are no guests to export.",
-            });
-            return;
-        }
-        try {
-            const response = await axios.get("/generate-report", {
-                responseType: "blob",
-            });
-
-            const url = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = url;
-            link.setAttribute("download", "Guests_Report.pdf");
-            document.body.appendChild(link);
-            link.click();
-
-            Swal.fire({
-                icon: "success",
-                title: "PDF Report Generated",
-                text: "The PDF report has been successfully generated and downloaded.",
-            });
-        } catch (error) {
-            console.error("Error generating PDF report:", error);
-
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: "Failed to generate PDF report. Please try again later.",
-            });
-        }
-    };
-
     const openModal = (guest) => {
         setSelectedGuest(guest);
         setFormData({
@@ -220,16 +183,7 @@ export default function Index({ auth }) {
                             wrapper: "min-h-[222px]",
                         }}
                         topContent={
-                            <div className="flex justify-between items-center">
-                                <Button
-                                    color="primary"
-                                    variant="bordered"
-                                    onPress={handleExport}
-                                    startContent={<FaFilePdf size={20} />}
-                                >
-                                    Export to PDF
-                                </Button>
-
+                            <div className="flex justify-start items-center">
                                 <p className="text-sm italic text-gray-700">
                                     showing {items.length} of{" "}
                                     {filteredGuests.length} guests

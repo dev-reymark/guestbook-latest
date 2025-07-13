@@ -223,35 +223,6 @@ class GuestLogController extends Controller
         }
     }
 
-    public function generateReport(Request $request)
-    {
-        $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-        ]);
-
-        $start_date = $request->input('start_date');
-        $end_date = $request->input('end_date');
-
-        $guests = GuestLog::whereBetween('check_in_time', [$start_date, $end_date])->get();
-
-        $pdf = app('dompdf.wrapper')->loadView('guestlog', ['guests' => $guests]);
-
-        return $pdf->download('GuestLogsReportfrom' . $start_date . 'to' . $end_date . '.pdf');
-    }
-
-    public function generateReportAllLogs(Request $request)
-    {
-        // Fetch all guest logs
-        $guests = GuestLog::all();
-
-        // Generate PDF report for all logs
-        $pdf = app('dompdf.wrapper')->loadView('guestlog', ['guests' => $guests]);
-
-        // Download the PDF
-        return $pdf->download('all_guest_logs_report.pdf');
-    }
-
     public function guestVisitsPerMonth()
     {
         $guestVisitsPerMonth = GuestLog::selectRaw('COUNT(*) as total_visits, MONTH(check_in_time) as month')

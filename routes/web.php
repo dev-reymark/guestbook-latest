@@ -30,6 +30,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
     Route::prefix('guests')->group(function () {
         // Display all guests
         Route::get('/', [GuestController::class, 'index'])->name('guests.index');
@@ -50,10 +52,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/guest-visits-per-month', [GuestLogController::class, 'guestVisitsPerMonth']);
     });
 
-
-    Route::get('/reports', [ReportController::class, 'create'])->name('reports.create');
-
-    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::prefix('reports')->group(function () {
+        Route::get('/', [ReportController::class, 'create'])->name('reports.create');
+        Route::post('/export', [ReportController::class, 'export'])->name('guests.export');
+        Route::post('/import', [ReportController::class, 'import'])->name('guests.import');
+    });
 
     Route::prefix('/media')->group(function () {
         Route::get('/', [UploadController::class, 'show'])->name('media.show');

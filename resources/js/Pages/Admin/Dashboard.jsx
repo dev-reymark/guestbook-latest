@@ -5,6 +5,10 @@ import { LuDatabaseBackup } from "react-icons/lu";
 import { VscSignOut } from "react-icons/vsc";
 import { HiOutlineDocumentReport } from "react-icons/hi";
 import { Inertia } from "@inertiajs/inertia";
+import { TbDatabaseImport, TbFileExport } from "react-icons/tb";
+import { useState } from "react";
+import ExportModal from "./Report/ExportModal";
+import ImportModal from "./Report/ImportModal";
 
 export default function Dashboard({
     auth,
@@ -18,6 +22,9 @@ export default function Dashboard({
     const formatNumber = (num) => {
         return new Intl.NumberFormat().format(num);
     };
+
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const handleLogout = () => {
         Inertia.post(route("logout"));
@@ -229,6 +236,38 @@ export default function Dashboard({
                                     </span>
                                 </div>
                             </Link>
+
+                            <a
+                                onClick={() => setShowImportModal(true)}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <TbDatabaseImport
+                                        size={20}
+                                        className="text-success-600 mr-3"
+                                    />
+                                    <span className="font-medium">
+                                        Import Data
+                                    </span>
+                                </div>
+                            </a>
+
+                            <a
+                                as="button"
+                                onClick={() => setShowExportModal(true)}
+                                className="p-4 bg-gray-50 dark:bg-neutral-700 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-600 transition-colors"
+                            >
+                                <div className="flex items-center">
+                                    <TbFileExport
+                                        size={20}
+                                        className="text-success-600 mr-3"
+                                    />
+                                    <span className="font-medium">
+                                        Export Data
+                                    </span>
+                                </div>
+                            </a>
+
                             <Link
                                 as="button"
                                 onClick={handleLogout}
@@ -246,6 +285,16 @@ export default function Dashboard({
                     </div>
                 </div>
             </div>
+
+            <ExportModal
+                show={showExportModal}
+                onClose={() => setShowExportModal(false)}
+            />
+
+            <ImportModal
+                show={showImportModal}
+                onClose={() => setShowImportModal(false)}
+            />
         </AuthenticatedLayout>
     );
 }

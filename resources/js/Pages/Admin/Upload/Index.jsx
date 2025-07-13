@@ -94,36 +94,21 @@ export default function Index({ auth }) {
         <AuthenticatedLayout
             user={auth.user}
             header={
-                <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                    Upload
-                </h2>
+                <>
+                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
+                        Upload Media
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                        The images and videos you upload will be display
+                        in the kiosk slider
+                    </p>
+                </>
             }
         >
             <Head title="Guests" />
 
             <div className="py-8 px-4">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="mb-8 bg-white rounded-xl border border-gray-100 p-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-4">
-                            Quick Actions
-                        </h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <Link
-                                // href={route("backups.index")}
-                                className="p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                            >
-                                <div className="flex items-center">
-                                    <TbDatabaseImport
-                                        size={24}
-                                        className="text-success-600 mr-3"
-                                    />
-                                    <span className="font-medium">
-                                        Import Excel/CSV
-                                    </span>
-                                </div>
-                            </Link>
-                        </div>
-                    </div>
                     <Table
                         topContent={
                             <div>
@@ -164,10 +149,6 @@ export default function Index({ auth }) {
                             ))}
                         </TableBody>
                     </Table>
-                    <p className="mt-1 ml-3 text-sm italic text-gray-600">
-                        The images and videos appear here will be display in the
-                        kiosk slider
-                    </p>
 
                     <Modal
                         isOpen={isOpen}
