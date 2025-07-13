@@ -18,7 +18,7 @@ class GuestsImport implements ToModel, WithHeadingRow
             'phone' => $row['phone'] ?? $row['Phone'] ?? null,
             'company' => $row['company'] ?? $row['Company'] ?? null,
             'address' => $row['address'] ?? $row['Address'] ?? null,
-            'is_agreed' => isset($row['is_agreed']) ? (strtolower($row['is_agreed']) === 'yes') : false,
+            'is_agreed'  => true,
         ]);
     }
 }

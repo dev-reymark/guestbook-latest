@@ -122,7 +122,7 @@ export default function CheckOut({ guestLogs }) {
 
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
-            <Head title="Check Out" />
+            <Head title="Check-Out" />
             <div className="py-12 p-4">
                 <div className="max-w-6xl mx-auto sm:px-6 lg:px-8">
                     <Card className="w-full p-4 bg-gray-100">

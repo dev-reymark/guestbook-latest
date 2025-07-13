@@ -6,6 +6,7 @@ use App\Models\Guest;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Carbon\Carbon;
 
 class GuestExport implements FromCollection, WithHeadings, WithMapping
 {
@@ -20,21 +21,35 @@ class GuestExport implements FromCollection, WithHeadings, WithMapping
 
     public function collection()
     {
-        $query = Guest::with('guestLogs');
-
-        if ($this->startDate && $this->endDate) {
-            $query->whereHas('guestLogs', function ($q) {
+        $query = Guest::with(['guestLogs' => function ($q) {
+            if ($this->startDate && $this->endDate) {
                 $q->whereBetween('check_in_time', [$this->startDate, $this->endDate]);
-            });
-        }
+            }
+        }]);
 
-        return $query->get();
+        return $query->get()->flatMap(function ($guest) {
+            if ($guest->guestLogs->isEmpty()) {
+                return [
+                    (object)[
+                        'guest' => $guest,
+                        'log' => null
+                    ]
+                ];
+            }
+
+            return $guest->guestLogs->map(function ($log) use ($guest) {
+                return (object)[
+                    'guest' => $guest,
+                    'log' => $log
+                ];
+            });
+        });
     }
 
     public function headings(): array
     {
         return [
-            'ID',
+            'Guest ID',
             'Name',
             'ID Type',
             'ID Number',
@@ -43,13 +58,18 @@ class GuestExport implements FromCollection, WithHeadings, WithMapping
             'Company',
             'Address',
             'Agreed to Terms',
-            'Last Visit Date',
-            'Total Visits'
+            'Check-in Time',
+            'Check-out Time',
+            'Purpose of Visit',
+            'Meeting With'
         ];
     }
 
-    public function map($guest): array
+    public function map($row): array
     {
+        $guest = $row->guest;
+        $log = $row->log;
+
         return [
             $guest->id,
             $guest->name,
@@ -60,8 +80,10 @@ class GuestExport implements FromCollection, WithHeadings, WithMapping
             $guest->company,
             $guest->address,
             $guest->is_agreed ? 'Yes' : 'No',
-            optional($guest->guestLogs->last())->check_in_time,
-            $guest->guestLogs->count()
+            $log ? Carbon::parse($log->check_in_time)->format('m/d/Y h:i A') : 'No visits yet',
+            $log && $log->check_out_time ? Carbon::parse($log->check_out_time)->format('m/d/Y h:i A') : '',
+            $log->purpose_of_visit ?? '',
+            $log->meeting_with ?? '',
         ];
     }
 }

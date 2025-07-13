@@ -9,7 +9,5 @@ class Upload extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'media_url'
-    ];
+    protected $fillable = ['file_path', 'file_type', 'file_size'];
 }

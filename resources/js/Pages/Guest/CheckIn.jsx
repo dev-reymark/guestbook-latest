@@ -160,7 +160,7 @@ export default function CheckIn({ guests }) {
 
     return (
         <div className="min-h-screen bg-[url(/assets/images/bg.png)] bg-cover">
-            <Head title="Guest Check-In" />
+            <Head title="Check-In" />
             <Modal
                 isOpen={!isOnline}
                 hideCloseButton

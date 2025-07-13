@@ -54,14 +54,14 @@ Route::middleware('auth')->group(function () {
 
     Route::prefix('reports')->group(function () {
         Route::get('/', [ReportController::class, 'create'])->name('reports.create');
-        Route::post('/export', [ReportController::class, 'export'])->name('guests.export');
+        Route::get('/export', [ReportController::class, 'export'])->name('guests.export');
         Route::post('/import', [ReportController::class, 'import'])->name('guests.import');
     });
 
     Route::prefix('/media')->group(function () {
-        Route::get('/', [UploadController::class, 'show'])->name('media.show');
-        Route::post('/', [UploadController::class, 'upload'])->name('media.upload');
         Route::get('/', [UploadController::class, 'create'])->name('media.create');
+        Route::post('/', [UploadController::class, 'upload'])->name('media.upload');
+        Route::get('/all', [UploadController::class, 'show']);
         Route::delete('/{id}', [UploadController::class, 'destroy']);
     });
 
@@ -87,9 +87,5 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/overdue-guests', [GuestLogController::class, 'getOverdueGuests']);
 });
-
-
-
-
 
 require __DIR__ . '/auth.php';

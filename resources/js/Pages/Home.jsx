@@ -21,7 +21,6 @@ import useNetworkStatus from "@/hooks/useNetworkStatus";
 import { MdWifiOff } from "react-icons/md";
 
 export default function Home({ mediaUrls = [] }) {
-    // console.log('mediaUrls', mediaUrls);
     const [currentTime, setCurrentTime] = useState(new Date());
     const audioRef = useRef(null);
 
@@ -58,6 +57,10 @@ export default function Home({ mediaUrls = [] }) {
         month: "long",
         day: "numeric",
     });
+
+    const isVideo = (url) => {
+        return url.match(/\.(mp4)$/i);
+    };
 
     return (
         <>
@@ -112,25 +115,38 @@ export default function Home({ mediaUrls = [] }) {
                                 }}
                                 className="h-full w-full"
                             >
-                                {mediaUrls.map((mediaUrl, index) => (
-                                    <SwiperSlide
-                                        key={index}
-                                        className="h-full w-full"
-                                    >
-                                        <div className="flex items-center justify-center h-full w-full">
-                                            <img
-                                                src={mediaUrl}
-                                                alt={`Media ${index}`}
-                                                className="object-contain w-full h-full"
-                                                onError={(e) => {
-                                                    e.target.onerror = null;
-                                                    e.target.src =
-                                                        "/assets/images/default-slide.jpg";
-                                                }}
-                                            />
-                                        </div>
-                                    </SwiperSlide>
-                                ))}
+                                {mediaUrls.map((mediaUrl, index) => {
+                                    const src = `/storage/${mediaUrl}`;
+                                    return (
+                                        <SwiperSlide
+                                            key={index}
+                                            className="h-full w-full"
+                                        >
+                                            <div className="flex items-center justify-center h-full w-full bg-black">
+                                                {isVideo(mediaUrl) ? (
+                                                    <video
+                                                        src={src}
+                                                        autoPlay
+                                                        loop
+                                                        muted
+                                                        playsInline
+                                                        className="object-contain w-full h-full"
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src={src}
+                                                        alt={`Media ${index}`}
+                                                        className="object-contain w-full h-full"
+                                                        onError={(e) => {
+                                                            e.target.onerror =
+                                                                null;
+                                                        }}
+                                                    />
+                                                )}
+                                            </div>
+                                        </SwiperSlide>
+                                    );
+                                })}
                             </Swiper>
                         </Card>
 
