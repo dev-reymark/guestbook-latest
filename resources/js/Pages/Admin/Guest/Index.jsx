@@ -1,4 +1,4 @@
-import { DeleteIcon, EyeIcon, SearchIcon } from "@/Components/Icons";
+import { DeleteIcon, EditIcon, EyeIcon, SearchIcon } from "@/Components/Icons";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Inertia } from "@inertiajs/inertia";
 import { Head, usePage } from "@inertiajs/react";
@@ -20,9 +20,7 @@ import {
     Pagination,
 } from "@heroui/react";
 import React from "react";
-import { FaFilePdf } from "react-icons/fa";
 import Swal from "sweetalert2";
-import axios from "axios";
 
 export default function Index({ auth }) {
     const {
@@ -227,25 +225,31 @@ export default function Index({ auth }) {
                                         {guest.address || "--"}
                                     </TableCell>
                                     <TableCell>
-                                        <div className="flex gap-2">
-                                            <Button
-                                                color="secondary"
-                                                variant="flat"
-                                                size="sm"
-                                                onPress={() => openModal(guest)}
-                                            >
-                                                Edit
-                                            </Button>
-                                            <Button
-                                                color="danger"
-                                                variant="flat"
-                                                size="sm"
-                                                onPress={() =>
-                                                    handleDelete(guest.id)
-                                                }
-                                            >
-                                                Delete
-                                            </Button>
+                                        <div className="flex gap-1">
+                                            <Tooltip content="Edit">
+                                                <Button
+                                                    isIconOnly
+                                                    size="sm"
+                                                    variant="light"
+                                                    onPress={() =>
+                                                        openModal(guest)
+                                                    }
+                                                >
+                                                    <EditIcon className="text-lg text-default-400" />
+                                                </Button>
+                                            </Tooltip>
+                                            <Tooltip content="Delete">
+                                                <Button
+                                                    isIconOnly
+                                                    size="sm"
+                                                    variant="light"
+                                                    onPress={() =>
+                                                        handleDelete(guest.id)
+                                                    }
+                                                >
+                                                    <DeleteIcon className="text-lg text-danger" />
+                                                </Button>
+                                            </Tooltip>
                                         </div>
                                     </TableCell>
                                 </TableRow>

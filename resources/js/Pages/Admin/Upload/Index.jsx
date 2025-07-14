@@ -13,6 +13,7 @@ import {
     TableColumn,
     TableHeader,
     TableRow,
+    Tooltip,
 } from "@heroui/react";
 import { Head, useForm } from "@inertiajs/react";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
@@ -33,6 +34,8 @@ export default function Index({ auth }) {
     const fetchUploads = async () => {
         const res = await axios.get("/media/all");
         setUploads(res.data);
+
+        // console.log(res.data);
     };
 
     const handleSubmit = (e) => {
@@ -90,12 +93,13 @@ export default function Index({ auth }) {
             <div className="py-8 px-4 max-w-7xl mx-auto">
                 <div className="flex mb-4">
                     <Button color="primary" onPress={onOpen}>
-                        Add Media
+                        Add
                     </Button>
                 </div>
 
                 <Table aria-label="Uploaded media">
                     <TableHeader>
+                        <TableColumn>File Path</TableColumn>
                         <TableColumn>PREVIEW</TableColumn>
                         <TableColumn>TYPE</TableColumn>
                         <TableColumn>SIZE (KB)</TableColumn>
@@ -104,17 +108,25 @@ export default function Index({ auth }) {
                     <TableBody emptyContent="No media uploaded.">
                         {uploads.map((upload) => (
                             <TableRow key={upload.id}>
+                                <TableCell className="italic">
+                                    {upload.file_path}
+                                </TableCell>
                                 <TableCell>{getPreview(upload)}</TableCell>
                                 <TableCell>{upload.file_type}</TableCell>
                                 <TableCell>{upload.file_size}</TableCell>
                                 <TableCell>
-                                    <Button
-                                        color="danger"
-                                        size="sm"
-                                        onPress={() => handleDelete(upload.id)}
-                                    >
-                                        Delete
-                                    </Button>
+                                    <Tooltip content="Delete">
+                                        <Button
+                                            isIconOnly
+                                            size="sm"
+                                            variant="light"
+                                            onPress={() =>
+                                                handleDelete(upload.id)
+                                            }
+                                        >
+                                            <DeleteIcon className="text-lg text-danger" />
+                                        </Button>
+                                    </Tooltip>
                                 </TableCell>
                             </TableRow>
                         ))}
