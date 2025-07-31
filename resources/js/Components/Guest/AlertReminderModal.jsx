@@ -5,6 +5,8 @@ import {
     ModalBody,
     Button,
     addToast,
+    Input,
+    Spinner,
 } from "@heroui/react";
 import { router } from "@inertiajs/react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -14,12 +16,16 @@ const REMINDER_DELAY_MINUTES = 30; // snooze length
 const POLL_INTERVAL_MINUTES = 1; // how often we poll the server
 const REMINDER_KEY = "lastDismissedReminderAt";
 const INACTIVITY_TIMEOUT_SECONDS = 90; // Auto-close after 60 seconds inactivity
-const REOPEN_DELAY_SECONDS = 60; // Show again after 60 seconds
+const REOPEN_DELAY_SECONDS = 90; // Show again after 60 seconds
+const HARDCODED_VERIFICATION_CODE = "123"; // Simple verification code
 
 export default function AlertReminderModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [currentReminder, setCurrentReminder] = useState(null);
     const [countdown, setCountdown] = useState(INACTIVITY_TIMEOUT_SECONDS);
+    const [verificationStep, setVerificationStep] = useState(false);
+    const [verificationCode, setVerificationCode] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const timeoutRef = useRef(null);
     const inactivityTimeoutRef = useRef(null);
     const countdownIntervalRef = useRef(null);
@@ -53,6 +59,8 @@ export default function AlertReminderModal() {
 
     const handleAutoClose = () => {
         setIsOpen(false);
+        setVerificationStep(false);
+        setVerificationCode("");
         clearInterval(countdownIntervalRef.current);
 
         // Show again after delay
@@ -105,6 +113,8 @@ export default function AlertReminderModal() {
                 params: { threshold: 30 },
             });
 
+            console.log("Overdue guests:", data);
+
             if (!data.length) {
                 setIsOpen(false);
                 return;
@@ -118,13 +128,20 @@ export default function AlertReminderModal() {
                 (Date.now() - checkInTime) / 3_600_000
             );
 
+            console.log("Most overdue guest:", mostOverdue);
+            console.log("Hours overdue:", hoursOverdue);
+
             setCurrentReminder({
                 guest: mostOverdue.guest.name,
                 checkInTime,
                 hoursOverdue,
                 logId: mostOverdue.id,
+                guestId: mostOverdue.guest.id_number, // ID number (may be null)
+                guest_id: mostOverdue.guest_id,
             });
             setIsOpen(true);
+            setVerificationStep(false);
+            setVerificationCode("");
         } catch (err) {
             console.error("Failed to fetch overdue guests:", err);
         }
@@ -141,6 +158,8 @@ export default function AlertReminderModal() {
 
     const handleClose = () => {
         setIsOpen(false);
+        setVerificationStep(false);
+        setVerificationCode("");
         localStorage.setItem(REMINDER_KEY, Date.now().toString());
         clearTimeout(inactivityTimeoutRef.current);
         clearInterval(countdownIntervalRef.current);
@@ -156,6 +175,38 @@ export default function AlertReminderModal() {
         resetInactivityTimer();
         if (!currentReminder?.logId) return;
 
+        // First show verification step
+        setVerificationStep(true);
+    };
+
+    const handleVerification = () => {
+        resetInactivityTimer();
+
+        // Check if verification code matches either the guest's ID number or the hardcoded code
+        const isValid =
+            verificationCode === currentReminder.guestId ||
+            verificationCode === currentReminder.guest_id.toString() ||
+            verificationCode === HARDCODED_VERIFICATION_CODE;
+
+        console.log(
+            "Verification code:",
+            verificationCode,
+            "is valid:",
+            isValid
+        );
+
+        if (!isValid) {
+            addToast({
+                title: "Verification Failed",
+                description: "The verification code you entered is incorrect.",
+                color: "danger",
+            });
+            return;
+        }
+
+        // Proceed with checkout
+        setIsLoading(true);
+
         router.post(
             route("guest.checkout", currentReminder.logId),
             {},
@@ -167,9 +218,12 @@ export default function AlertReminderModal() {
                         color: "success",
                     });
                     setIsOpen(false);
+                    setVerificationStep(false);
+                    setVerificationCode("");
                     localStorage.removeItem(REMINDER_KEY);
                     clearTimeout(inactivityTimeoutRef.current);
                     clearInterval(countdownIntervalRef.current);
+                    setIsLoading(false);
                 },
                 onError: (errors) => {
                     resetInactivityTimer();
@@ -187,6 +241,7 @@ export default function AlertReminderModal() {
                         description: errorMessage,
                         color: "danger",
                     });
+                    setIsLoading(false);
                 },
             }
         );
@@ -204,41 +259,104 @@ export default function AlertReminderModal() {
             <ModalContent>
                 <ModalBody className="p-6">
                     <div className="text-center">
-                        <h3 className="text-lg font-bold mb-2">
-                            Overdue Check‑out Reminder
-                        </h3>
-
-                        {currentReminder && (
+                        {!verificationStep ? (
                             <>
+                                <h3 className="text-lg font-bold mb-2">
+                                    Overdue Check‑out Reminder
+                                </h3>
+
+                                {currentReminder && (
+                                    <>
+                                        <p className="mb-4">
+                                            <strong>
+                                                {currentReminder.guest}
+                                            </strong>{" "}
+                                            has not checked out after&nbsp;
+                                            <strong>
+                                                {currentReminder.hoursOverdue}{" "}
+                                                hour(s)
+                                            </strong>
+                                            .
+                                        </p>
+                                        <p>
+                                            Checked in at:&nbsp;
+                                            {formatLocalDateTime(
+                                                currentReminder.checkInTime
+                                            )}
+                                        </p>
+                                    </>
+                                )}
+
+                                <div className="mt-4 text-sm text-danger-500">
+                                    Auto-closing in {countdown} seconds...
+                                </div>
+
+                                <div className="mt-6 flex justify-center gap-3">
+                                    <Button
+                                        color="primary"
+                                        onPress={handleCheckOut}
+                                    >
+                                        Check Out Now
+                                    </Button>
+                                    <Button
+                                        variant="flat"
+                                        onPress={handleClose}
+                                    >
+                                        Remind Me Later
+                                    </Button>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <h3 className="text-lg font-bold mb-2">
+                                    Verify Checkout
+                                </h3>
+
                                 <p className="mb-4">
-                                    <strong>{currentReminder.guest}</strong> has
-                                    not checked out after&nbsp;
-                                    <strong>
-                                        {currentReminder.hoursOverdue} hour(s)
-                                    </strong>
-                                    .
+                                    Please enter{" "}
+                                    <strong>{currentReminder.guest}'s</strong>{" "}
+                                    ID number to verify checkout.
                                 </p>
-                                <p>
-                                    Checked in at:&nbsp;
-                                    {formatLocalDateTime(
-                                        currentReminder.checkInTime
-                                    )}
-                                </p>
+
+                                <div className="flex flex-col items-center gap-4">
+                                    <Input
+                                        type="text"
+                                        placeholder="Enter ID number"
+                                        value={verificationCode}
+                                        onChange={(e) =>
+                                            setVerificationCode(e.target.value)
+                                        }
+                                        className="max-w-xs"
+                                        autoFocus
+                                    />
+
+                                    <div className="flex justify-center gap-3">
+                                        <Button
+                                            color="primary"
+                                            onPress={handleVerification}
+                                            isDisabled={
+                                                !verificationCode || isLoading
+                                            }
+                                            isLoading={isLoading}
+                                        >
+                                            {isLoading
+                                                ? "Please wait..."
+                                                : "Verify & Check Out"}
+                                        </Button>
+                                        <Button
+                                            variant="flat"
+                                            onPress={() => {
+                                                setVerificationStep(false);
+                                                setVerificationCode("");
+                                            }}
+                                            isDisabled={isLoading}
+                                        >
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
                             </>
                         )}
-
-                        <div className="mt-4 text-sm text-gray-500">
-                            Auto-closing in {countdown} seconds...
-                        </div>
-
-                        <div className="mt-6 flex justify-center gap-3">
-                            <Button color="primary" onPress={handleCheckOut}>
-                                Check Out Now
-                            </Button>
-                            <Button variant="flat" onPress={handleClose}>
-                                Remind Me Later
-                            </Button>
-                        </div>
                     </div>
                 </ModalBody>
             </ModalContent>
