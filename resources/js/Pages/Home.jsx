@@ -19,6 +19,7 @@ import { useEffect, useState, useRef } from "react";
 import AlertReminderModal from "@/Components/Guest/AlertReminderModal";
 import useNetworkStatus from "@/hooks/useNetworkStatus";
 import { MdWifiOff } from "react-icons/md";
+import FloatingSettingsButton from "@/Components/Guest/FloatingSettingsButton";
 
 export default function Home({ mediaUrls = [] }) {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -66,6 +67,7 @@ export default function Home({ mediaUrls = [] }) {
         <>
             <Head title="Home" />
             <AlertReminderModal />
+            <FloatingSettingsButton />
             <audio
                 ref={audioRef}
                 src="/assets/audio/datalogic.mp3"

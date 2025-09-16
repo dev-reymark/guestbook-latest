@@ -113,7 +113,7 @@ export default function AlertReminderModal() {
                 params: { threshold: 30 },
             });
 
-            console.log("Overdue guests:", data);
+            // console.log("Overdue guests:", data);
 
             if (!data.length) {
                 setIsOpen(false);
@@ -128,8 +128,8 @@ export default function AlertReminderModal() {
                 (Date.now() - checkInTime) / 3_600_000
             );
 
-            console.log("Most overdue guest:", mostOverdue);
-            console.log("Hours overdue:", hoursOverdue);
+            // console.log("Most overdue guest:", mostOverdue);
+            // console.log("Hours overdue:", hoursOverdue);
 
             setCurrentReminder({
                 guest: mostOverdue.guest.name,
