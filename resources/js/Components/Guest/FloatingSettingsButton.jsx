@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 const FloatingSettingsButton = () => {
     const [isExpanded, setIsExpanded] = useState(false);
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [zoomLevel, setZoomLevel] = useState(100);
 
     const toggleExpanded = () => {
         setIsExpanded(!isExpanded);
@@ -16,32 +15,16 @@ const FloatingSettingsButton = () => {
                     `Error attempting to enable full-screen mode: ${err.message}`
                 );
             });
-            setIsFullScreen(true);
         } else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
-                setIsFullScreen(false);
             }
         }
     };
 
-    const zoomIn = () => {
-        setZoomLevel((prev) => Math.min(prev + 10, 150));
-    };
-
-    const zoomOut = () => {
-        setZoomLevel((prev) => Math.max(prev - 10, 50));
-    };
-
     const handleLogin = () => {
-        // Redirect to login endpoint
         window.location.href = "/login";
     };
-
-    // Apply zoom effect to the entire page
-    useEffect(() => {
-        document.body.style.zoom = `${zoomLevel}%`;
-    }, [zoomLevel]);
 
     // Listen for fullscreen changes
     useEffect(() => {
@@ -126,50 +109,6 @@ const FloatingSettingsButton = () => {
                                 />
                             </svg>
                         )}
-                    </button>
-
-                    {/* Zoom in button */}
-                    <button
-                        onClick={zoomIn}
-                        className="p-3 bg-green-600 text-white rounded-full shadow-lg hover:bg-green-700 transition-all duration-300 transform hover:scale-110"
-                        aria-label="Zoom in"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3-3H7"
-                            />
-                        </svg>
-                    </button>
-
-                    {/* Zoom out button */}
-                    <button
-                        onClick={zoomOut}
-                        className="p-3 bg-red-600 text-white rounded-full shadow-lg hover:bg-red-700 transition-all duration-300 transform hover:scale-110"
-                        aria-label="Zoom out"
-                    >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="h-6 w-6"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7"
-                            />
-                        </svg>
                     </button>
                 </div>
             )}
