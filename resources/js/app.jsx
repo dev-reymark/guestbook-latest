@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
+import OnlineStatusProvider from "./Components/Guest/OnlineStatusProvider";
 
 const appName =
     import.meta.env.VITE_APP_NAME || "Datalogic Systems Corporation";
@@ -21,7 +22,9 @@ createInertiaApp({
 
         root.render(
             <HeroUIProvider>
-                <App {...props} />
+                <OnlineStatusProvider>
+                    <App {...props} />
+                </OnlineStatusProvider>
                 <ToastProvider placement="top-right" />
             </HeroUIProvider>
         );

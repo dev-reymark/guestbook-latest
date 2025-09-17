@@ -1,0 +1,16 @@
+{
+    "name": "GuestBook",
+    "short_name": "GB",
+    "background_color": "#6777ef",
+    "display": "fullscreen",
+    "description": "DSC GuestBook.",
+    "theme_color": "#6777ef",
+    "start_url": "/",
+    "icons": [
+        {
+            "src": "logo.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
