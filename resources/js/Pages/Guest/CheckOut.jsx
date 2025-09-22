@@ -22,6 +22,7 @@ import AlertReminderModal from "@/Components/Guest/AlertReminderModal";
 import { useAutoRedirect } from "@/hooks/useAutoRedirect";
 import { formatLocalDateTime } from "@/utils/date";
 import { BiHomeSmile } from "react-icons/bi";
+import { TbArrowBackUp } from "react-icons/tb";
 
 export default function CheckOut({ guestLogs }) {
     const [filterValue, setFilterValue] = useState("");
@@ -139,7 +140,18 @@ export default function CheckOut({ guestLogs }) {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div className="flex justify-between gap-3 items-end mb-4">
-                                <div className="flex gap-2">
+                                <div className="flex gap-4 items-center">
+                                    <Button
+                                        as={Link}
+                                        href="/"
+                                        color="default"
+                                        variant="light"
+                                        startContent={
+                                            <TbArrowBackUp size={32} />
+                                        }
+                                    >
+                                        Back
+                                    </Button>
                                     <Button
                                         as={Link}
                                         href={route("guest.checkin.create")}
@@ -148,23 +160,12 @@ export default function CheckOut({ guestLogs }) {
                                     >
                                         Check-in
                                     </Button>
-                                    <Button
-                                        as={Link}
-                                        href="/"
-                                        color="primary"
-                                        variant="flat"
-                                        isIconOnly
-                                    >
-                                        <BiHomeSmile size={24} />
-                                    </Button>
                                 </div>
                                 <Input
-                                    variant="bordered"
                                     placeholder="Search"
+                                    variant="bordered"
                                     className="w-full sm:max-w-[35%]"
-                                    startContent={
-                                        <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
-                                    }
+                                    startContent={<SearchIcon />}
                                     value={filterValue}
                                     onChange={(e) => {
                                         setFilterValue(e.target.value);
