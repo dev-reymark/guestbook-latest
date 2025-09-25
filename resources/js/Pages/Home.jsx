@@ -164,7 +164,7 @@ export default function Home({ mediaUrls = [] }) {
 
                             <div className="grid grid-cols-2 gap-4 h-[160px] sm:h-[200px]">
                                 <Card
-                                    as={Link}
+                                    as="a"
                                     href={route("guest.checkin.create")}
                                     className="bg-success-50 hover:scale-[1.02] transition-transform"
                                 >
@@ -181,8 +181,7 @@ export default function Home({ mediaUrls = [] }) {
                                 </Card>
 
                                 <Card
-                                    as={Link}
-                                    isPressable
+                                    as="a"
                                     href={route("guest.checkout.show")}
                                     className="bg-warning-50 hover:scale-[1.02] transition-transform"
                                 >
